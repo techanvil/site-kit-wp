@@ -772,6 +772,13 @@ final class Modules {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function( WP_REST_Request $request ) {
+							// Demonstrate bug #3043, repro with
+							// window.googlesitekit.api.get( 'modules', 'analytics', 'foo', { bar: false }, { cacheTTL: 1, useCache: false } );.
+							$data = $request->get_params();
+							if ( isset( $data['bar'] ) ) {
+								$data ['gettype'] = gettype( $data['bar'] );
+								return new WP_REST_Response( $data );
+							}
 							$slug = $request['slug'];
 							try {
 								$module = $this->get_module( $slug );
