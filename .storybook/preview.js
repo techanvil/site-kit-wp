@@ -20,7 +20,6 @@
  * External dependencies
  */
 import cloneDeep from 'lodash/cloneDeep';
-import { addDecorator } from '@storybook/react';
 
 /**
  * Internal dependencies
@@ -32,6 +31,7 @@ import './assets/sass/wp-admin.scss';
 import { bootstrapFetchMocks } from './fetch-mocks';
 // TODO: Remove when legacy data API is removed.
 import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
+import { WithTestRegistry } from '../tests/js/utils';
 
 bootstrapFetchMocks();
 
@@ -86,17 +86,23 @@ const resetGlobals = () => {
 };
 resetGlobals();
 
-addDecorator( ( story ) => {
-	resetGlobals();
-	return story();
-} );
+const setupRegistry = ( { dispatch } ) => {
+	// @TODO setupRegistry
+	global.console.log( dispatch );
+};
 
-// Global Decorator.
-addDecorator( ( story ) => (
-	<div className="googlesitekit-plugin-preview js">
-		<div className="googlesitekit-plugin">{ story() }</div>
-	</div>
-) );
+export const decorators = [
+	( Story ) => {
+		resetGlobals();
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<div className="googlesitekit-plugin-preview js">
+					<Story />
+				</div>
+			</WithTestRegistry>
+		);
+	},
+];
 
 // TODO Would be nice if this wrote to a file. This logs our Storybook data to the browser console. Currently it gets put in .storybook/storybook-data and used in tests/backstop/scenarios.js.
 // eslint-disable-next-line no-console
