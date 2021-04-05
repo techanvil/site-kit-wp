@@ -37,6 +37,7 @@ import { STORE_NAME } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
+global.console.log( 'two' );
 const {
 	active,
 	setupComplete,

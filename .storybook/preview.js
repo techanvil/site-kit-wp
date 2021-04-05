@@ -93,6 +93,7 @@ const setupRegistry = ( { dispatch } ) => {
 
 export const decorators = [
 	( Story ) => {
+		global.console.log( 'one' );
 		resetGlobals();
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
