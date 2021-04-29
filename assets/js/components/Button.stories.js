@@ -29,6 +29,13 @@ DefaultButton.args = {
 	children: 'Default Button',
 	href: '#',
 };
+DefaultButton.scenarios = {
+	hierarchyRootSeparator: '|',
+	hierarchySeparator: {},
+	hoverSelector: '.googlesitekit-button--hover',
+	postInteractionWait: 3000,
+	onReadyScript: 'mouse.js',
+};
 
 export const HoverButton = Template.bind( {} );
 HoverButton.storyName = 'Default Button Hover';

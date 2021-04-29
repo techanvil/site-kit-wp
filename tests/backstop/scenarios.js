@@ -1,6 +1,12 @@
 const storybookHost = require( './detect-storybook-host' );
 const rootURL = `${ storybookHost }iframe.html?id=`;
 const storybookStories = require( '../../.storybook/storybook-data' );
+const storybookMainConfig = require( '../../.storybook/main' );
+const glob = require( 'glob' );
+
+console.log(storybookMainConfig);
+
+console.log('ZOOOOOOEEEEEEE');
 
 module.exports = storybookStories.map( ( story ) => {
 	return {
