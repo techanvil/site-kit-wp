@@ -29,7 +29,7 @@ DefaultButton.args = {
 	children: 'Default Button',
 	href: '#',
 };
-DefaultButton.scenarios = {
+DefaultButton.scenario = {
 	hierarchyRootSeparator: '|',
 	hierarchySeparator: {},
 	hoverSelector: '.googlesitekit-button--hover',
