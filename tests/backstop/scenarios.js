@@ -27,18 +27,17 @@ storyFiles.forEach( ( storyFile ) => {
 			defaultComponent = properties?.component || '';
 		},
 		AssignmentExpression: ( { node } ) => {
+			let nodeValue = '';
 			if ( node.right.type === 'StringLiteral' && node.left.property.name === 'storyName' ) {
-				stories[ node.left.object.name ] = stories[ node.left.object.name ] || {};
-				stories[ node.left.object.name ][ node.left.property.name ] = node.right.value;
+				nodeValue = node.right.value;
 			} else if ( node.right.type === 'ObjectExpression' ) {
-				const properties = {};
+				nodeValue = {};
 				node.right.properties.forEach( ( property ) => {
-					properties[ property.key.name ] = property.value.value;
+					nodeValue[ property.key.name ] = property.value.value;
 				} );
-
-				stories[ node.left.object.name ] = stories[ node.left.object.name ] || {};
-				stories[ node.left.object.name ][ node.left.property.name ] = properties;
 			}
+
+			stories[ node.left.object.name ][ node.left.property.name ] = nodeValue;
 		},
 	} );
 
