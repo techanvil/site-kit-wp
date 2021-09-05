@@ -218,7 +218,7 @@ final class Search_Console extends Module
 
 				$site_url = $data['siteURL'];
 				if ( 0 === strpos( $site_url, 'sc-domain:' ) ) { // Domain property.
-					$site_url = 'sc-domain:' . $url_normalizer->normalize_url( str_replace( 'sc-domain:', '', $site_url, 1 ) );
+					$site_url = 'sc-domain:' . $url_normalizer->normalize_url( preg_replace( '/sc-domain:/', '', $site_url, 1 ) );
 				} else { // URL property.
 					$site_url = $url_normalizer->normalize_url( trailingslashit( $site_url ) );
 				}
