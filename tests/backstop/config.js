@@ -33,7 +33,7 @@ module.exports = {
 	onBeforeScript: 'puppet/onBefore.js',
 	asyncCaptureLimit: 5,
 	asyncCompareLimit: 50,
-	debug: false,
+	debug: true,
 	debugWindow: false,
 	// Use a custom command template to make sure it works correctly in the GitHub actions environment.
 	// The only difference between the original dockerCommandTemplate and this one is that we use --tty flag
