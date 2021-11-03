@@ -1,3 +1,10 @@
+function dumpFrameTree(frame, indent) {
+  console.log(indent + frame.url());
+  for (const child of frame.childFrames()) {
+    dumpFrameTree(child, indent + '  ');
+  }
+}
+
 module.exports = async ( page, scenario ) => {
 	const hoverSelector = scenario.hoverSelectors || scenario.hoverSelector;
 	const clickSelector = scenario.clickSelectors || scenario.clickSelector;
@@ -21,6 +28,8 @@ module.exports = async ( page, scenario ) => {
 	}
 
 	if ( hoverSelector ) {
+                console.log('FRAME TREE 1');
+                dumpFrameTree(page.mainFrame(), '');
 		for ( const hoverSelectorIndex of [].concat( hoverSelector ) ) {
 			try {
 				await page.waitForSelector( hoverSelectorIndex, { visible: true } );
@@ -28,11 +37,18 @@ module.exports = async ( page, scenario ) => {
 				console.log('CATCH ERROR [waitForSelector]', e);
 			}
 			// await page.waitForTimeout( 100 );
+
+                        console.log('FRAME TREE 2');
+                        dumpFrameTree(page.mainFrame(), '');
+
 			try {
 				await page.hover( hoverSelectorIndex );
 			} catch (e) {
 				console.log('CATCH ERROR [hover]', e);
 			}
+
+                        console.log('FRAME TREE 3');
+                        dumpFrameTree(page.mainFrame(), '');
 		}
 	}
 
@@ -49,6 +65,9 @@ module.exports = async ( page, scenario ) => {
 		} catch (e) {
 			console.log('CATCH ERROR [waitForTimeout]', e);
 		}
+
+                console.log('FRAME TREE 4');
+                dumpFrameTree(page.mainFrame(), '');
 	}
 
 	if ( scrollToSelector ) {
