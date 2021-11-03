@@ -31,8 +31,10 @@ if ( process.argv.includes( '--docker' ) && ! hasStorybookHostArg ) {
 
 module.exports = {
 	onBeforeScript: 'puppet/onBefore.js',
-	asyncCaptureLimit: 5,
-	asyncCompareLimit: 50,
+	// asyncCaptureLimit: 5,
+	// asyncCompareLimit: 50,
+	asyncCaptureLimit: 1,
+	asyncCompareLimit: 1,
 	debug: true,
 	debugWindow: false,
 	// Use a custom command template to make sure it works correctly in the GitHub actions environment.
