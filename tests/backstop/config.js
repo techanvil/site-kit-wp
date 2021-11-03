@@ -41,7 +41,7 @@ module.exports = {
 	// The only difference between the original dockerCommandTemplate and this one is that we use --tty flag
 	// in the current template only if it is supported by the current STDOUT stream.
 	// dockerCommandTemplate: 'docker run --rm --shm-size=1G ubuntu df -h',
-	dockerCommandTemplate: `docker run --shm-size=1G --rm -i${
+	dockerCommandTemplate: `docker run --shm-size=2G --rm -i${
 		process.stdout.isTTY ? ' --tty' : ''
 	} --mount type=bind,source="{cwd}",target=/src backstopjs/backstopjs:{version} {backstopCommand} {args}`,
 	engine: 'puppeteer',
