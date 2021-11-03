@@ -19,6 +19,7 @@ module.exports = async ( page, scenario ) => {
 	if ( hoverSelector ) {
 		for ( const hoverSelectorIndex of [].concat( hoverSelector ) ) {
 			await page.waitForSelector( hoverSelectorIndex );
+			await page.waitForTimeout( 100 );
 			await page.hover( hoverSelectorIndex );
 		}
 	}
