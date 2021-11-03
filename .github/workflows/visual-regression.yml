@@ -51,7 +51,7 @@ jobs:
       - name: npm install
         run: npm i
       - name: Run Backstopjs
-        run: while npm run backstopjs -- --storybook-host=./dist/ ; do echo SUCCESS ; sleep 1 ; done
+        run: while npm run backstopjs -- --storybook-host=./dist/ ; do echo SUCCESS ; sleep 1 ; done ; exit 1
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         if: failure()
