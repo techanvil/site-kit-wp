@@ -1,3 +1,4 @@
+node_modules/puppeteer/
 bower_components
 vendor
 !/assets/sass/vendor

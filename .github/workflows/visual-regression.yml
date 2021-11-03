@@ -49,7 +49,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-cache-
       - name: npm install
-        run: npm ci
+        run: npm i
       - name: Run Backstopjs
         run: npm run backstopjs -- --storybook-host=./dist/
       - name: Upload artifacts
