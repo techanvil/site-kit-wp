@@ -5,6 +5,13 @@ function dumpFrameTree(frame, indent) {
   }
 }
 
+async function dumpOpacity(page, msg) {
+  const opacity = await page.evaluate(() => {
+    return window.getComputedStyle( document.querySelector('.googlesitekit-button--hover'), ':before' ).opacity
+  });
+  console.log('OPACITY', msg, opacity);
+}
+
 module.exports = async ( page, scenario ) => {
 	const hoverSelector = scenario.hoverSelectors || scenario.hoverSelector;
 	const clickSelector = scenario.clickSelectors || scenario.clickSelector;
@@ -28,8 +35,9 @@ module.exports = async ( page, scenario ) => {
 	}
 
 	if ( hoverSelector ) {
-                console.log('FRAME TREE 1');
-                dumpFrameTree(page.mainFrame(), '');
+                // console.log('FRAME TREE 1');
+                // dumpFrameTree(page.mainFrame(), '');
+                dumpOpacity(page, '1');
 		for ( const hoverSelectorIndex of [].concat( hoverSelector ) ) {
 			try {
 				await page.waitForSelector( hoverSelectorIndex, { visible: true } );
@@ -38,18 +46,19 @@ module.exports = async ( page, scenario ) => {
 			}
 			// await page.waitForTimeout( 100 );
 
-                        console.log('FRAME TREE 2');
-                        dumpFrameTree(page.mainFrame(), '');
+                        // console.log('FRAME TREE 2');
+                        // dumpFrameTree(page.mainFrame(), '');
 
 			try {
 				await page.hover( hoverSelectorIndex );
-                                await page.waitForSelector('.googlesitekit-button--hover.mdc-button--raised:hover');
+                                // await page.waitForSelector('.googlesitekit-button--hover.mdc-button--raised:hover');
 			} catch (e) {
 				console.log('CATCH ERROR [hover]', e);
 			}
+                        dumpOpacity(page, '2');
 
-                        console.log('FRAME TREE 3');
-                        dumpFrameTree(page.mainFrame(), '');
+                        // console.log('FRAME TREE 3');
+                        // dumpFrameTree(page.mainFrame(), '');
 		}
 	}
 
@@ -66,9 +75,10 @@ module.exports = async ( page, scenario ) => {
 		} catch (e) {
 			console.log('CATCH ERROR [waitForTimeout]', e);
 		}
+                dumpOpacity(page, '3');
 
-                console.log('FRAME TREE 4');
-                dumpFrameTree(page.mainFrame(), '');
+                // console.log('FRAME TREE 4');
+                // dumpFrameTree(page.mainFrame(), '');
 	}
 
 	if ( scrollToSelector ) {
