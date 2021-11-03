@@ -1,17 +1,22 @@
-function dumpFrameTree(frame, indent) {
-  console.log(indent + frame.url());
-  for (const child of frame.childFrames()) {
-    dumpFrameTree(child, indent + '  ');
-  }
+function dumpFrameTree( frame, indent ) {
+	console.log( indent + frame.url() );
+	for ( const child of frame.childFrames() ) {
+		dumpFrameTree( child, indent + '  ' );
+	}
 }
 
-async function dumpOpacity(page, msg) {
-  const { opacity, isHover } = await page.evaluate(() => {
-    const opacity = window.getComputedStyle( document.querySelector('.googlesitekit-button--hover'), ':before' ).opacity
-    const isHover = !! document.querySelector('.googlesitekit-button--hover:hover');
-    return { opacity, isHover };
-  });
-  console.log('OPACITY, ISHOVER', msg, opacity, isHover);
+async function dumpOpacity( page, msg ) {
+	const { opacity, isHover } = await page.evaluate( () => {
+		const opacity = window.getComputedStyle(
+			document.querySelector( '.googlesitekit-button--hover' ),
+			':before'
+		).opacity;
+		const isHover = !! document.querySelector(
+			'.googlesitekit-button--hover:hover'
+		);
+		return { opacity, isHover };
+	} );
+	console.log( 'OPACITY, ISHOVER', msg, opacity, isHover );
 }
 
 module.exports = async ( page, scenario ) => {
@@ -22,8 +27,12 @@ module.exports = async ( page, scenario ) => {
 	const scrollToSelector = scenario.scrollToSelector;
 	const postInteractionWait = scenario.postInteractionWait; // selector [str] | ms [int]
 	console.log(
-		'hoverSelector, clickSelector, keyPressSelector, scrollToSelector, postInteractionWait', 
-		hoverSelector, clickSelector, keyPressSelector, scrollToSelector, postInteractionWait
+		'hoverSelector, clickSelector, keyPressSelector, scrollToSelector, postInteractionWait',
+		hoverSelector,
+		clickSelector,
+		keyPressSelector,
+		scrollToSelector,
+		postInteractionWait
 	);
 
 	if ( keyPressSelector ) {
@@ -37,30 +46,34 @@ module.exports = async ( page, scenario ) => {
 	}
 
 	if ( hoverSelector ) {
-                // console.log('FRAME TREE 1');
-                // dumpFrameTree(page.mainFrame(), '');
-                dumpOpacity(page, '1');
+		// console.log('FRAME TREE 1');
+		// dumpFrameTree(page.mainFrame(), '');
+		dumpOpacity( page, '1' );
 		for ( const hoverSelectorIndex of [].concat( hoverSelector ) ) {
 			try {
-				await page.waitForSelector( hoverSelectorIndex, { visible: true } );
-			} catch (e) {
-				console.log('CATCH ERROR [waitForSelector]', e);
+				await page.waitForSelector( hoverSelectorIndex, {
+					visible: true,
+				} );
+			} catch ( e ) {
+				console.log( 'CATCH ERROR [waitForSelector]', e );
 			}
 			// await page.waitForTimeout( 100 );
 
-                        // console.log('FRAME TREE 2');
-                        // dumpFrameTree(page.mainFrame(), '');
+			// console.log('FRAME TREE 2');
+			// dumpFrameTree(page.mainFrame(), '');
 
 			try {
 				await page.hover( hoverSelectorIndex );
-                                await page.waitForSelector('.googlesitekit-button--hover.mdc-button--raised:hover');
-			} catch (e) {
-				console.log('CATCH ERROR [hover]', e);
+				await page.waitForSelector(
+					'.googlesitekit-button--hover.mdc-button--raised:hover'
+				);
+			} catch ( e ) {
+				console.log( 'CATCH ERROR [hover]', e );
 			}
-                        dumpOpacity(page, '2');
+			dumpOpacity( page, '2' );
 
-                        // console.log('FRAME TREE 3');
-                        // dumpFrameTree(page.mainFrame(), '');
+			// console.log('FRAME TREE 3');
+			// dumpFrameTree(page.mainFrame(), '');
 		}
 	}
 
@@ -74,13 +87,13 @@ module.exports = async ( page, scenario ) => {
 	if ( postInteractionWait ) {
 		try {
 			await page.waitForTimeout( postInteractionWait );
-		} catch (e) {
-			console.log('CATCH ERROR [waitForTimeout]', e);
+		} catch ( e ) {
+			console.log( 'CATCH ERROR [waitForTimeout]', e );
 		}
-                dumpOpacity(page, '3');
+		dumpOpacity( page, '3' );
 
-                // console.log('FRAME TREE 4');
-                // dumpFrameTree(page.mainFrame(), '');
+		// console.log('FRAME TREE 4');
+		// dumpFrameTree(page.mainFrame(), '');
 	}
 
 	if ( scrollToSelector ) {
