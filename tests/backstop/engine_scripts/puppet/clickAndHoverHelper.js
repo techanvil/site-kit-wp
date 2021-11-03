@@ -57,7 +57,7 @@ module.exports = async ( page, scenario ) => {
 			} catch ( e ) {
 				console.log( 'CATCH ERROR [waitForSelector]', e );
 			}
-			// await page.waitForTimeout( 100 );
+			await page.waitForTimeout( 1000 );
 
 			// console.log('FRAME TREE 2');
 			// dumpFrameTree(page.mainFrame(), '');
