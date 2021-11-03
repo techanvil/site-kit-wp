@@ -44,7 +44,7 @@ module.exports = {
 	} --mount type=bind,source="{cwd}",target=/src backstopjs/backstopjs:{version} {backstopCommand} {args}`,
 	engine: 'puppeteer',
 	engineOptions: {
-		args: [ '--disable-dev-shm-usage', '--no-sandbox' ],
+		args: [ '--no-sandbox' ],
 	},
 	id: 'google-site-kit',
 	paths: {
