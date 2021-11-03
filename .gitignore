@@ -10,7 +10,6 @@ vendor
 phpunit.xml
 .idea
 npm-debug.log
-/dist
 /languages
 /storybook-static
 google-site-kit*.zip
