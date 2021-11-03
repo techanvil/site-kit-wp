@@ -5,16 +5,16 @@ const viewPorts = [
 		width: 420,
 		height: 580,
 	},
-	{
-		label: 'medium',
-		width: 868,
-		height: 1124,
-	},
-	{
-		label: 'large',
-		width: 1124,
-		height: 1124,
-	},
+	// {
+	// 	label: 'medium',
+	// 	width: 868,
+	// 	height: 1124,
+	// },
+	// {
+	// 	label: 'large',
+	// 	width: 1124,
+	// 	height: 1124,
+	// },
 ];
 
 module.exports = viewPorts;
