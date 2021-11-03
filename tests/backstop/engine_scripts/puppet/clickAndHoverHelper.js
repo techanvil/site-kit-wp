@@ -43,6 +43,7 @@ module.exports = async ( page, scenario ) => {
 
 			try {
 				await page.hover( hoverSelectorIndex );
+                                await page.waitForSelector('.googlesitekit-button--hover.mdc-button--raised:hover');
 			} catch (e) {
 				console.log('CATCH ERROR [hover]', e);
 			}
