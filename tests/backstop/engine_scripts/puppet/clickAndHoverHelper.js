@@ -22,9 +22,17 @@ module.exports = async ( page, scenario ) => {
 
 	if ( hoverSelector ) {
 		for ( const hoverSelectorIndex of [].concat( hoverSelector ) ) {
-			await page.waitForSelector( hoverSelectorIndex, { visible: true } );
+			try {
+				await page.waitForSelector( hoverSelectorIndex, { visible: true } );
+			} catch (e) {
+				console.log('CATCH ERROR [waitForSelector]', e);
+			}
 			// await page.waitForTimeout( 100 );
-			await page.hover( hoverSelectorIndex );
+			try {
+				await page.hover( hoverSelectorIndex );
+			} catch (e) {
+				console.log('CATCH ERROR [hover]', e);
+			}
 		}
 	}
 
@@ -36,7 +44,11 @@ module.exports = async ( page, scenario ) => {
 	}
 
 	if ( postInteractionWait ) {
-		await page.waitForTimeout( postInteractionWait );
+		try {
+			await page.waitForTimeout( postInteractionWait );
+		} catch (e) {
+			console.log('CATCH ERROR [waitForTimeout]', e);
+		}
 	}
 
 	if ( scrollToSelector ) {
