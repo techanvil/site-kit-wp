@@ -6,10 +6,12 @@ function dumpFrameTree(frame, indent) {
 }
 
 async function dumpOpacity(page, msg) {
-  const opacity = await page.evaluate(() => {
-    return window.getComputedStyle( document.querySelector('.googlesitekit-button--hover'), ':before' ).opacity
+  const { opacity, isHover } = await page.evaluate(() => {
+    const opacity = window.getComputedStyle( document.querySelector('.googlesitekit-button--hover'), ':before' ).opacity
+    const isHover = !! document.querySelector('.googlesitekit-button--hover:hover');
+    return { opacity, isHover };
   });
-  console.log('OPACITY', msg, opacity);
+  console.log('OPACITY, ISHOVER', msg, opacity, isHover);
 }
 
 module.exports = async ( page, scenario ) => {
