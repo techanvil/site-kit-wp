@@ -1,4 +1,4 @@
-node_modules
+node_modules/puppeteer/
 bower_components
 vendor
 !/assets/sass/vendor
@@ -10,7 +10,6 @@ vendor
 phpunit.xml
 .idea
 npm-debug.log
-/dist
 /languages
 /storybook-static
 google-site-kit*.zip

@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Button from './Button';
+/*
 import HelpIcon from '../../svg/help.svg';
 
 const Template = ( args ) => <Button { ...args } />;
@@ -96,3 +97,4 @@ export default {
 	title: 'Components/Button',
 	component: Button,
 };
+*/

@@ -37,6 +37,21 @@ module.exports = [
 		},
 	},
 	{
+		id: 'components-button--vrt-story',
+		kind: 'Global',
+		name: 'Buttons',
+		story: 'Buttons',
+		parameters: {
+			fileName: './stories/buttons.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				hoverSelector: '.googlesitekit-button--hover',
+				onReadyScript: 'mouse.js',
+			},
+		},
+	},
+	{
 		id: 'global--links',
 		kind: 'Global',
 		name: 'Links',

@@ -49,9 +49,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-cache-
       - name: npm install
-        run: npm ci
+        run: npm i
       - name: Run Backstopjs
-        run: npm run test:visualtest
+        run: while npm run backstopjs -- --storybook-host=./dist/ ; do echo SUCCESS ; sleep 1 ; done ; exit 1
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         if: failure()
