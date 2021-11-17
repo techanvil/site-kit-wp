@@ -88,7 +88,7 @@ export const VRTStory = () => (
 VRTStory.scenario = {
 	label: 'Global/Buttons',
 	hoverSelector: '.googlesitekit-button--hover',
-	postInteractionWait: 3000,
+	// postInteractionWait: 3000,
 	onReadyScript: 'mouse.js',
 };
 

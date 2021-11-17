@@ -133,5 +133,7 @@ const legacyScenarios = legacyStorybookScenarios.map( ( story ) => {
 	};
 } );
 
-// module.exports = [ ...legacyScenarios, ...csfScenarios ];
-module.exports = [ ...csfScenarios ];
+module.exports = [ ...legacyScenarios, ...csfScenarios ]
+  .filter(({ label }) => ['Global/Buttons'].includes(label));
+  // .filter(({ label }) => ['Global/Buttons', 'Global/Links'].includes(label));
+// module.exports = [ ...csfScenarios ];
