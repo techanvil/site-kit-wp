@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Button from './Button';
+/*
 import HelpIcon from '../../svg/help.svg';
 
 const Template = ( args ) => <Button { ...args } />;
@@ -88,7 +89,7 @@ export const VRTStory = () => (
 VRTStory.scenario = {
 	label: 'Global/Buttons',
 	hoverSelector: '.googlesitekit-button--hover',
-	// postInteractionWait: 3000,
+	postInteractionWait: 3000,
 	onReadyScript: 'mouse.js',
 };
 
@@ -96,3 +97,4 @@ export default {
 	title: 'Components/Button',
 	component: Button,
 };
+*/
