@@ -26,6 +26,7 @@ jobs:
   build-zips:
     name: Build Zips
     runs-on: ubuntu-latest
+    environment: test
     timeout-minutes: 20
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
     steps:
