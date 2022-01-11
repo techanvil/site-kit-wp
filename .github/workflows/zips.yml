@@ -1,6 +1,12 @@
 name: Plugin Zip Files
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      blah_foo:
+        description: 'BLAH FOO'
+        required: true
+
   # push:
   #   branches:
   #     - develop
@@ -21,6 +27,7 @@ on: workflow_dispatch
   #     - reopened
   #     - synchronize
   #     - ready_for_review
+
 
 jobs:
   build-zips:
