@@ -118,7 +118,17 @@ jobs:
         if: steps.cache-npm-install.outputs.cache-hit != 'true'
         run: npm ci
 
+      - name: Cache dist
+        id: cache-dist
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-dist
+        with:
+          path: dist
+          key: ${{ runner.os }}-dist-${{ env.cache-name }}-${{ hashFiles('assets/**/*') }}
+
       - name: Build
+        if: steps.cache-dist.outputs.cache-hit != 'true'
         run: npm run build:test
 
       # E2E tests use a dedicated container, this is just for Composer.
