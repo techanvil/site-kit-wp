@@ -147,19 +147,7 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
-      - name: Cache composer install
-        id: cache-composer-install
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-composer-install
-        with:
-          path: |
-            vendor
-            third-party
-          key: ${{ runner.os }}-composer-install-${{ env.cache-name }}-${{ hashFiles('**/composer.lock') }}
-
       - name: Composer Install
-        if: steps.cache-composer-install.outputs.cache-hit != 'true'
         run: composer install --no-interaction --no-progress --no-dev
 
       - name: Start environment
