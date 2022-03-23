@@ -97,19 +97,25 @@ jobs:
         with:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
 
-      - name: Cache node modules
+      - name: Cache ~/.npm
         uses: actions/cache@v2
         env:
-          cache-name: cache-node-modules
+          cache-name: cache-npm
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          key: ${{ runner.os }}-npm-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Cache node_modules
+        id: cache-npm-install
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-npm-install
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: npm install
+        if: steps.cache-npm-install.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Build
@@ -131,7 +137,19 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
+      - name: Cache composer install
+        id: cache-composer-install
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-composer-install
+        with:
+          path: |
+            vendor
+            third-party
+          key: ${{ runner.os }}-composer-install-${{ env.cache-name }}-${{ hashFiles('**/composer.lock') }}
+
       - name: Composer Install
+        if: steps.cache-composer-install.outputs.cache-hit != 'true'
         run: composer install --no-interaction --no-progress --no-dev
 
       - name: Start environment
