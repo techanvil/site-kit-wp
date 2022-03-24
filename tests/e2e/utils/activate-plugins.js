@@ -24,6 +24,7 @@ import {
 	switchUserToTest,
 	visitAdminPage,
 } from '@wordpress/e2e-test-utils';
+import { step } from './step-and-screenshot';
 
 /**
  * Performs an action on provided plugins.
@@ -73,4 +74,29 @@ export function activatePlugins( ...plugins ) {
  */
 export function deactivatePlugins( ...plugins ) {
 	return bulkPluginsAction( 'deactivate-selected', plugins );
+}
+
+export async function doActivatePlugin( slug ) {
+	await switchUserToAdmin();
+	await visitAdminPage( 'plugins.php' );
+	const disableLink = await page.$(
+		`tr[data-slug="${ slug }"] .deactivate a`
+	);
+	if ( disableLink ) {
+		await switchUserToTest();
+		return;
+	}
+	// await page.waitForTimeout( 5000 );
+	await step(
+		`wait for plugin activate link: ${ slug }`,
+		page.waitForSelector( `tr[data-slug="${ slug }"] .activate a` )
+	);
+	await page.click( `tr[data-slug="${ slug }"] .activate a` );
+	await step(
+		`wait for plugin deactivate link: ${ slug }`,
+		page.waitForSelector( `tr[data-slug="${ slug }"] .deactivate a` )
+	);
+	// await page.waitForTimeout( 5000 );
+	await page.waitForSelector( `tr[data-slug="${ slug }"] .deactivate a` );
+	await switchUserToTest();
 }
