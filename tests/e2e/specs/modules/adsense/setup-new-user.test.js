@@ -39,6 +39,7 @@ import {
 	setSiteVerification,
 	useRequestInterception,
 	step,
+	screenshot,
 } from '../../../utils';
 
 async function proceedToAdsenseSetup() {
@@ -341,7 +342,12 @@ describe( 'setting up the AdSense module', () => {
 				} );
 			};
 
+			await screenshot( 'logged-in, pre proceedToAdsenseSetup' );
+
 			await proceedToAdsenseSetup();
+
+			await screenshot( 'logged-in, post proceedToAdsenseSetup' );
+
 			await step(
 				'expect toHaveValidAMPForUser',
 				expect( '/' ).toHaveValidAMPForUser()
@@ -365,7 +371,12 @@ describe( 'setting up the AdSense module', () => {
 				} );
 			};
 
+			await screenshot( 'non-logged-in, pre proceedToAdsenseSetup' );
+
 			await proceedToAdsenseSetup();
+
+			await screenshot( 'non-logged-in, post proceedToAdsenseSetup' );
+
 			await step(
 				'expect toHaveValidAMPForVisitor',
 				expect( '/' ).toHaveValidAMPForVisitor()
