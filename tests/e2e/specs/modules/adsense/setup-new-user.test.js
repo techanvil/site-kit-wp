@@ -159,169 +159,163 @@ describe( 'setting up the AdSense module', () => {
 	} );
 
 	it( 'displays “Your account is getting ready” when account is graylisted', async () => {
-		expect( true ).toBeTruthy();
-		// datapointHandlers.accounts = ( request ) => {
-		// 	request.respond( {
-		// 		status: 200,
-		// 		body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
-		// 	} );
-		// };
-		// datapointHandlers.alerts = ( request ) => {
-		// 	request.respond( {
-		// 		status: 200,
-		// 		body: JSON.stringify( [
-		// 			{
-		// 				name: `accounts/${ ADSENSE_ACCOUNT._id }/alerts/e38f3957-be27-31cc-8d33-ba4b1f6e84c2`,
-		// 				severity: 'SEVERE',
-		// 				message:
-		// 					"Your ad units are not displaying ads because you haven't provided your account payments information yet.",
-		// 				type: 'billingless-account',
-		// 			},
-		// 			{
-		// 				name: `accounts/${ ADSENSE_ACCOUNT._id }/alerts/ef158442-c283-3866-a3af-5f9cf7e190f3`,
-		// 				severity: 'SEVERE',
-		// 				message:
-		// 					'Your AdSense application is still under review. You will only see blank ads until your account has been fully approved or disapproved.',
-		// 				type: 'graylisted-publisher',
-		// 			},
-		// 		] ),
-		// 	} );
-		// };
+		datapointHandlers.accounts = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
+			} );
+		};
+		datapointHandlers.alerts = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( [
+					{
+						name: `accounts/${ ADSENSE_ACCOUNT._id }/alerts/e38f3957-be27-31cc-8d33-ba4b1f6e84c2`,
+						severity: 'SEVERE',
+						message:
+							"Your ad units are not displaying ads because you haven't provided your account payments information yet.",
+						type: 'billingless-account',
+					},
+					{
+						name: `accounts/${ ADSENSE_ACCOUNT._id }/alerts/ef158442-c283-3866-a3af-5f9cf7e190f3`,
+						severity: 'SEVERE',
+						message:
+							'Your AdSense application is still under review. You will only see blank ads until your account has been fully approved or disapproved.',
+						type: 'graylisted-publisher',
+					},
+				] ),
+			} );
+		};
 
-		// await expect( '/' ).not.toHaveAdSenseTag();
+		await expect( '/' ).not.toHaveAdSenseTag();
 
-		// await proceedToAdsenseSetup();
+		await proceedToAdsenseSetup();
 
-		// await expect( page ).toMatchElement(
-		// 	'.googlesitekit-setup-module__title',
-		// 	{
-		// 		text: /Your account is getting ready/i,
-		// 	}
-		// );
-		// await expect( page ).toMatchElement( '.googlesitekit-cta-link', {
-		// 	text: /Go to your AdSense account to check on your site’s status or to complete setting up/i,
-		// } );
+		await expect( page ).toMatchElement(
+			'.googlesitekit-setup-module__title',
+			{
+				text: /Your account is getting ready/i,
+			}
+		);
+		await expect( page ).toMatchElement( '.googlesitekit-cta-link', {
+			text: /Go to your AdSense account to check on your site’s status or to complete setting up/i,
+		} );
 
-		// await expect( '/' ).not.toHaveAdSenseTag();
+		await expect( '/' ).not.toHaveAdSenseTag();
 	} );
 
 	it( 'displays “Your account is getting ready” when the Adsense account is pending review', async () => {
-		expect( true ).toBeTruthy();
-		// datapointHandlers.accounts = ( request ) => {
-		// 	request.respond( {
-		// 		status: 200,
-		// 		body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
-		// 	} );
-		// };
-		// datapointHandlers.alerts = ( request ) => {
-		// 	request.respond( {
-		// 		status: 403,
-		// 		body: JSON.stringify( {
-		// 			code: 403,
-		// 			message: 'Users account is pending review.',
-		// 			data: {
-		// 				status: 403,
-		// 				reason: 'accountPendingReview',
-		// 			},
-		// 		} ),
-		// 	} );
-		// };
-		// datapointHandlers.clients = ( request ) => {
-		// 	request.respond( {
-		// 		status: 200,
-		// 		body: JSON.stringify( [ ADSENSE_CLIENT ] ),
-		// 	} );
-		// };
+		datapointHandlers.accounts = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
+			} );
+		};
+		datapointHandlers.alerts = ( request ) => {
+			request.respond( {
+				status: 403,
+				body: JSON.stringify( {
+					code: 403,
+					message: 'Users account is pending review.',
+					data: {
+						status: 403,
+						reason: 'accountPendingReview',
+					},
+				} ),
+			} );
+		};
+		datapointHandlers.clients = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( [ ADSENSE_CLIENT ] ),
+			} );
+		};
 
-		// await expect( '/' ).not.toHaveAdSenseTag();
+		await expect( '/' ).not.toHaveAdSenseTag();
 
-		// await proceedToAdsenseSetup();
+		await proceedToAdsenseSetup();
 
-		// await expect( page ).toMatchElement(
-		// 	'.googlesitekit-setup-module__title',
-		// 	{
-		// 		text: /Your account is getting ready/i,
-		// 	}
-		// );
-		// await expect( page ).toMatchElement( '.googlesitekit-cta-link', {
-		// 	text: /Go to your AdSense account to check on your site’s status or to complete setting up/i,
-		// } );
+		await expect( page ).toMatchElement(
+			'.googlesitekit-setup-module__title',
+			{
+				text: /Your account is getting ready/i,
+			}
+		);
+		await expect( page ).toMatchElement( '.googlesitekit-cta-link', {
+			text: /Go to your AdSense account to check on your site’s status or to complete setting up/i,
+		} );
 
-		// await expect( '/' ).toHaveAdSenseTag();
-		// expect( console ).toHaveErrored(); // 403 Response.
+		await expect( '/' ).toHaveAdSenseTag();
+		expect( console ).toHaveErrored(); // 403 Response.
 	} );
 
 	it( 'displays “Your site isn’t ready to show ads yet” when the users account is disapproved', async () => {
-		expect( true ).toBeTruthy();
+		datapointHandlers.accounts = ( request ) => {
+			request.respond( {
+				status: 403,
+				body: JSON.stringify( {
+					code: 403,
+					message: 'Users account has been disapproved.',
+					data: {
+						status: 403,
+						reason: 'disapprovedAccount',
+					},
+				} ),
+			} );
+		};
 
-		// datapointHandlers.accounts = ( request ) => {
-		// 	request.respond( {
-		// 		status: 403,
-		// 		body: JSON.stringify( {
-		// 			code: 403,
-		// 			message: 'Users account has been disapproved.',
-		// 			data: {
-		// 				status: 403,
-		// 				reason: 'disapprovedAccount',
-		// 			},
-		// 		} ),
-		// 	} );
-		// };
+		await expect( '/' ).not.toHaveAdSenseTag();
 
-		// await expect( '/' ).not.toHaveAdSenseTag();
+		await proceedToAdsenseSetup();
 
-		// await proceedToAdsenseSetup();
+		await expect( page ).toMatchElement(
+			'.googlesitekit-setup-module__title',
+			{
+				text: /Your site isn’t ready to show ads yet/i,
+			}
+		);
+		await expect( page ).toMatchElement( '.googlesitekit-cta-link', {
+			text: /Go to AdSense to find out how to fix the issue/i,
+		} );
 
-		// await expect( page ).toMatchElement(
-		// 	'.googlesitekit-setup-module__title',
-		// 	{
-		// 		text: /Your site isn’t ready to show ads yet/i,
-		// 	}
-		// );
-		// await expect( page ).toMatchElement( '.googlesitekit-cta-link', {
-		// 	text: /Go to AdSense to find out how to fix the issue/i,
-		// } );
-
-		// await expect( '/' ).not.toHaveAdSenseTag();
-		// expect( console ).toHaveErrored(); // 403 Response.
+		await expect( '/' ).not.toHaveAdSenseTag();
+		expect( console ).toHaveErrored(); // 403 Response.
 	} );
 
 	it( 'displays “Create your AdSense account” when the user does not have an AdSense account', async () => {
-		expect( true ).toBeTruthy();
+		datapointHandlers.accounts = ( request ) => {
+			request.respond( {
+				status: 403,
+				body: JSON.stringify( {
+					code: 403,
+					message: 'User does not have an AdSense account.',
+					data: {
+						status: 403,
+						reason: 'noAdSenseAccount',
+					},
+				} ),
+			} );
+		};
 
-		// datapointHandlers.accounts = ( request ) => {
-		// 	request.respond( {
-		// 		status: 403,
-		// 		body: JSON.stringify( {
-		// 			code: 403,
-		// 			message: 'User does not have an AdSense account.',
-		// 			data: {
-		// 				status: 403,
-		// 				reason: 'noAdSenseAccount',
-		// 			},
-		// 		} ),
-		// 	} );
-		// };
+		await expect( '/' ).not.toHaveAdSenseTag();
 
-		// await expect( '/' ).not.toHaveAdSenseTag();
+		await proceedToAdsenseSetup();
 
-		// await proceedToAdsenseSetup();
+		await expect( page ).toMatchElement(
+			'.googlesitekit-setup-module__title',
+			{
+				text: /Create your AdSense account/i,
+			}
+		);
+		await expect( page ).toMatchElement(
+			'.googlesitekit-setup-module__action',
+			{
+				text: /Create AdSense Account/i,
+			}
+		);
 
-		// await expect( page ).toMatchElement(
-		// 	'.googlesitekit-setup-module__title',
-		// 	{
-		// 		text: /Create your AdSense account/i,
-		// 	}
-		// );
-		// await expect( page ).toMatchElement(
-		// 	'.googlesitekit-setup-module__action',
-		// 	{
-		// 		text: /Create AdSense Account/i,
-		// 	}
-		// );
-
-		// await expect( '/' ).not.toHaveAdSenseTag();
-		// expect( console ).toHaveErrored(); // 403 Response.
+		await expect( '/' ).not.toHaveAdSenseTag();
+		expect( console ).toHaveErrored(); // 403 Response.
 	} );
 
 	describe( 'AMP is setup', () => {
