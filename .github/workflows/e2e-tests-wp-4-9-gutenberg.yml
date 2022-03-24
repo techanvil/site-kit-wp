@@ -154,8 +154,10 @@ jobs:
       - name: Start environment
         run: npm run env:start
 
-      - name: wc -l amp-settings.js
-        run: docker exec googlesitekit-e2e_wordpress_1 wc -l wp-content/plugins/amp/assets/js/amp-settings.js
+      - name: check amp plugin files
+        run: |
+          docker exec googlesitekit-e2e_wordpress_1 wc -l wp-content/plugins/amp/assets/js/amp-settings.js wp-content/plugins/amp/vendor/autoload.php
+          docker exec googlesitekit-e2e_wordpress_1 ls -l wp-content/plugins/amp/assets/js/amp-settings.js wp-content/plugins/amp/vendor/autoload.php
 
       - name: Run the tests
         run: npm run test:e2e
