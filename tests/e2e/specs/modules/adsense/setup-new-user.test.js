@@ -332,24 +332,22 @@ describe( 'setting up the AdSense module', () => {
 			await deactivatePlugin( 'amp' );
 		} );
 		it( 'has valid AMP for logged-in users', async () => {
-			expect( true ).toBeTruthy();
+			datapointHandlers.accounts = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
+				} );
+			};
 
-			// datapointHandlers.accounts = ( request ) => {
-			// 	request.respond( {
-			// 		status: 200,
-			// 		body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
-			// 	} );
-			// };
+			datapointHandlers.clients = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [ ADSENSE_CLIENT ] ),
+				} );
+			};
 
-			// datapointHandlers.clients = ( request ) => {
-			// 	request.respond( {
-			// 		status: 200,
-			// 		body: JSON.stringify( [ ADSENSE_CLIENT ] ),
-			// 	} );
-			// };
-
-			// await proceedToAdsenseSetup();
-			// await expect( '/' ).toHaveValidAMPForUser();
+			await proceedToAdsenseSetup();
+			await expect( '/' ).toHaveValidAMPForUser();
 		} );
 
 		it( 'has valid AMP for non-logged in users', async () => {
