@@ -88,12 +88,12 @@ export async function doActivatePlugin( slug ) {
 	}
 	// await page.waitForTimeout( 5000 );
 	await step(
-		`wait for plugin activate link: ${ slug }`,
+		`wait for ${ slug } plugin activate link`,
 		page.waitForSelector( `tr[data-slug="${ slug }"] .activate a` )
 	);
 	await page.click( `tr[data-slug="${ slug }"] .activate a` );
 	await step(
-		`wait for plugin deactivate link: ${ slug }`,
+		`wait for ${ slug } plugin deactivate link`,
 		page.waitForSelector( `tr[data-slug="${ slug }"] .deactivate a` )
 	);
 	// await page.waitForTimeout( 5000 );
