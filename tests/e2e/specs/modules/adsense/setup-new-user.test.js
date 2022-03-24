@@ -38,6 +38,7 @@ import {
 	setSearchConsoleProperty,
 	setSiteVerification,
 	useRequestInterception,
+	step,
 } from '../../../utils';
 
 async function proceedToAdsenseSetup() {
@@ -341,7 +342,11 @@ describe( 'setting up the AdSense module', () => {
 			};
 
 			await proceedToAdsenseSetup();
-			await expect( '/' ).toHaveValidAMPForUser();
+			await step(
+				'expect toHaveValidAMPForUser',
+				expect( '/' ).toHaveValidAMPForUser()
+			);
+			// await expect( '/' ).toHaveValidAMPForUser();
 		} );
 
 		it.only( 'has valid AMP for non-logged in users', async () => {
@@ -361,7 +366,11 @@ describe( 'setting up the AdSense module', () => {
 			};
 
 			await proceedToAdsenseSetup();
-			await expect( '/' ).toHaveValidAMPForVisitor();
+			await step(
+				'expect toHaveValidAMPForVisitor',
+				expect( '/' ).toHaveValidAMPForVisitor()
+			);
+			// await expect( '/' ).toHaveValidAMPForVisitor();
 		} );
 	} );
 } );
