@@ -235,7 +235,8 @@ function observeConsoleLogging() {
 		// failure.
 
 		// eslint-disable-next-line no-console
-		console[ logFunction ]( text );
+		console[ logFunction ]( message );
+		// console[ logFunction ]( text );
 	} );
 }
 
