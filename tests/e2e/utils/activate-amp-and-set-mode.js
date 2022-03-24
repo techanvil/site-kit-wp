@@ -24,7 +24,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { wpApiFetch, doActivatePlugin } from './';
+import { wpApiFetch } from './';
 
 /**
  * The allow list of AMP modes.
@@ -45,7 +45,7 @@ export const allowedAMPModes = {
  * @param {string} mode The mode to set AMP to. Possible value of standard, transitional or reader.
  */
 export const activateAMPWithMode = async ( mode ) => {
-	await doActivatePlugin( 'amp' );
+	await activatePlugin( 'amp' );
 	await setAMPMode( mode );
 };
 
