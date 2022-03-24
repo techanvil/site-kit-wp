@@ -344,8 +344,7 @@ describe( 'setting up the AdSense module', () => {
 			await expect( '/' ).toHaveValidAMPForUser();
 		} );
 
-		// eslint-disable-next-line jest/no-focused-tests
-		it.only( 'has valid AMP for non-logged in users', async () => {
+		it( 'has valid AMP for non-logged in users', async () => {
 			await activateAMPWithMode( 'primary' );
 			datapointHandlers.accounts = ( request ) => {
 				request.respond( {
