@@ -92,11 +92,15 @@ Object.entries( configsMapping ).forEach( ( [ envKey, argName ] ) => {
 
 const cleanUpPrefixes = [ '--puppeteer-', '--wordpress-' ];
 
-const onlyTagManager = [ '-f', 'tagmanager/setup.test.js' ];
+const specArgs = [
+	'-f',
+	// 'tagmanager/setup.test.js',
+	'adsense/setup-new-user.test.js',
+];
 
 jest.run( [
 	...config,
 	...runInBand,
 	...getArgsFromCLI( cleanUpPrefixes ),
-	...onlyTagManager,
+	...specArgs,
 ] );
