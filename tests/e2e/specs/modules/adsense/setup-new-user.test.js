@@ -48,12 +48,21 @@ async function proceedToAdsenseSetup() {
 		visitAdminPage( 'admin.php', 'page=googlesitekit-settings' )
 	);
 	// await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-	await page.waitForSelector( '.mdc-tab-bar' );
-	await expect( page ).toClick( '.mdc-tab', {
-		text: /connect more services/i,
-	} );
-	await page.waitForSelector(
-		'.googlesitekit-settings-connect-module--adsense'
+	await step(
+		'wait for selector mdc-tab-bar',
+		page.waitForSelector( '.mdc-tab-bar' )
+	);
+	await step(
+		'connect more services',
+		expect( page ).toClick( '.mdc-tab', {
+			text: /connect more services/i,
+		} )
+	);
+	await step(
+		'wait for selector googlesitekit-settings-connect-module--adsense',
+		page.waitForSelector(
+			'.googlesitekit-settings-connect-module--adsense'
+		)
 	);
 
 	await Promise.all( [
