@@ -95,6 +95,9 @@ const cleanUpPrefixes = [ '--puppeteer-', '--wordpress-' ];
 const specArgs = [
 	'-f',
 	// 'tagmanager/setup.test.js',
+	// 'adsense/setup-new-user.test.js',
+	'adsense/amp-auto-ads-tag.test.js',
+	'-f',
 	'adsense/setup-new-user.test.js',
 ];
 
