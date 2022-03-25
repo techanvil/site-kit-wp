@@ -43,7 +43,11 @@ import {
 } from '../../../utils';
 
 async function proceedToAdsenseSetup() {
-	await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
+	await step(
+		'visit admin page',
+		visitAdminPage( 'admin.php', 'page=googlesitekit-settings' )
+	);
+	// await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 	await page.waitForSelector( '.mdc-tab-bar' );
 	await expect( page ).toClick( '.mdc-tab', {
 		text: /connect more services/i,
