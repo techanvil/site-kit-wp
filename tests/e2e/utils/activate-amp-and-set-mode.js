@@ -47,7 +47,6 @@ export const allowedAMPModes = {
  */
 export const activateAMPWithMode = async ( mode ) => {
 	await activatePlugin( 'amp' );
-	await page.waitForTimeout( 1000 );
 	await setAMPMode( mode );
 };
 
