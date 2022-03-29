@@ -24,7 +24,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { wpApiFetch } from './';
+import { wpApiFetch, createWaitForFetchRequests } from './';
 import { step } from './step-and-screenshot';
 
 /**
@@ -69,6 +69,8 @@ export const setAMPMode = async ( mode ) => {
 		() => window.ampSettings && window.ampSettings.OPTIONS_REST_PATH
 	);
 	if ( optionsRESTPath ) {
+		const waitForFetchRequests = createWaitForFetchRequests();
+
 		const scannableURLsRESTPath = await page.evaluate(
 			() => window.ampSettings.SCANNABLE_URLS_REST_PATH
 		);
@@ -118,6 +120,9 @@ export const setAMPMode = async ( mode ) => {
 			),
 		] );
 		// It looks like we might need to wait for something here to prevent SiteScanContextProvider from throwing its error.
+
+		await waitForFetchRequests(); // Clean up request listeners.
+
 		return;
 	}
 	// if ( optionsRESTPath ) {
