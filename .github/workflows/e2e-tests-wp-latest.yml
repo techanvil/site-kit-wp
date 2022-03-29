@@ -99,22 +99,38 @@ jobs:
         with:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
 
-      - name: Cache node modules
+      - name: Cache ~/.npm
         uses: actions/cache@v2
         env:
-          cache-name: cache-node-modules
+          cache-name: cache-npm
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          key: ${{ runner.os }}-npm-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Cache node_modules
+        id: cache-npm-install
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-npm-install
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: npm install
+        if: steps.cache-npm-install.outputs.cache-hit != 'true'
         run: npm ci
 
+      - name: Cache dist
+        id: cache-dist
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-dist
+        with:
+          path: dist
+          key: ${{ runner.os }}-dist-${{ env.cache-name }}-${{ hashFiles('assets/**/*') }}
+
       - name: Build
+        if: steps.cache-dist.outputs.cache-hit != 'true'
         run: npm run build:test
 
       # E2E tests use a dedicated container, this is just for Composer.
