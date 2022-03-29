@@ -24,7 +24,11 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { wpApiFetch, createWaitForFetchRequests } from './';
+import {
+	wpApiFetch,
+	useRequestInterception,
+	createWaitForFetchRequests,
+} from './';
 import { step } from './step-and-screenshot';
 
 /**
@@ -62,6 +66,29 @@ export const setAMPMode = async ( mode ) => {
 	expect( allowedAMPModes ).toHaveProperty( mode );
 	const ampMode = allowedAMPModes[ mode ];
 	// Set the AMP mode
+
+	await page.setRequestInterception( true );
+	// eslint-disable-next-line react-hooks/rules-of-hooks
+	useRequestInterception( ( request ) => {
+		if ( request.url().match( 'scannable-urls' ) ) {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( [
+					{
+						url: 'http://localhost:9002/',
+						type: 'is_home',
+						label: 'Homepage',
+						amp_url: 'http://localhost:9002/?amp=1',
+						validation_errors: [],
+						stale: false,
+					},
+				] ),
+			} );
+		} else {
+			request.continue();
+		}
+	} );
+
 	await visitAdminPage( 'admin.php', 'page=amp-options' );
 
 	// AMP v2
@@ -69,7 +96,7 @@ export const setAMPMode = async ( mode ) => {
 		() => window.ampSettings && window.ampSettings.OPTIONS_REST_PATH
 	);
 	if ( optionsRESTPath ) {
-		const waitForFetchRequests = createWaitForFetchRequests();
+		// const waitForFetchRequests = createWaitForFetchRequests(); TODO: Move this above visitAdminPage?
 
 		const scannableURLsRESTPath = await page.evaluate(
 			() => window.ampSettings.SCANNABLE_URLS_REST_PATH
@@ -121,7 +148,7 @@ export const setAMPMode = async ( mode ) => {
 		] );
 		// It looks like we might need to wait for something here to prevent SiteScanContextProvider from throwing its error.
 
-		await waitForFetchRequests(); // Clean up request listeners.
+		// await waitForFetchRequests(); // Clean up request listeners.
 
 		return;
 	}
