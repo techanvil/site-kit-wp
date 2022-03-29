@@ -154,8 +154,11 @@ jobs:
       - name: Start environment
         run: npm run env:start
 
-      - name: Run the tests
-        run: npm run test:e2e
+      # - name: Run the tests
+      #   run: npm run test:e2e
+
+      - name: Run the tests until they fail
+        run: while npm run test:e2e ; do echo RUNNING TESTS AGAIN ; sleep 1 ; done
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
