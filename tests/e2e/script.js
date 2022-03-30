@@ -93,12 +93,12 @@ Object.entries( configsMapping ).forEach( ( [ envKey, argName ] ) => {
 const cleanUpPrefixes = [ '--puppeteer-', '--wordpress-' ];
 
 const specArgs = [
-	'-f',
-	'tagmanager/setup.test.js',
+	// '-f',
+	// 'tagmanager/setup.test.js',
 	'-f',
 	'adsense/setup-new-user.test.js',
-	'-f',
-	'adsense/amp-auto-ads-tag.test.js', //  verify 'secondary' AMP mode
+	// '-f',
+	// 'adsense/amp-auto-ads-tag.test.js', //  verify 'secondary' AMP mode
 ];
 
 jest.run( [
