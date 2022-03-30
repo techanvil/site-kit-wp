@@ -152,6 +152,9 @@ jobs:
       - name: Composer Install
         run: composer install --no-interaction --no-progress --no-dev
 
+      - name: Unzip AMP plugin (prod)
+        run: cd plugins/amp && unzip amp-prod.zip
+
       - name: Start environment
         run: npm run env:start
 
