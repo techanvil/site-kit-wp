@@ -241,13 +241,13 @@ function observeConsoleLogging() {
 
 		const args = await Promise.all(
 			message.args().map( ( messageArg ) =>
-				messageArg.executionContext().evaluate( ( arg ) => {
+				messageArg.evaluate( ( arg ) => {
 					// I'm in a page context now. If my arg is an error - get me its message.
 					if ( arg instanceof Error ) return arg.message;
 					// return arg right away. since we use `executionContext.evaluate`, it'll return JSON value of
 					// the argument if possible, or `undefined` if it fails to stringify it.
 					return arg;
-				}, messageArg )
+				} )
 			)
 		);
 
