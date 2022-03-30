@@ -24,11 +24,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import {
-	wpApiFetch,
-	useRequestInterception,
-	createWaitForFetchRequests,
-} from './';
+import { wpApiFetch } from './';
 import { step } from './step-and-screenshot';
 
 /**
@@ -66,29 +62,6 @@ export const setAMPMode = async ( mode ) => {
 	expect( allowedAMPModes ).toHaveProperty( mode );
 	const ampMode = allowedAMPModes[ mode ];
 	// Set the AMP mode
-
-	await page.setRequestInterception( true );
-	// eslint-disable-next-line react-hooks/rules-of-hooks
-	useRequestInterception( ( request ) => {
-		if ( request.url().match( 'scannable-urls' ) ) {
-			request.respond( {
-				status: 200,
-				body: JSON.stringify( [
-					{
-						url: 'http://localhost:9002/',
-						type: 'is_home',
-						label: 'Homepage',
-						amp_url: 'http://localhost:9002/?amp=1',
-						validation_errors: [],
-						stale: false,
-					},
-				] ),
-			} );
-		} else {
-			request.continue( {}, 1 );
-		}
-	} );
-
 	await visitAdminPage( 'admin.php', 'page=amp-options' );
 
 	// AMP v2
