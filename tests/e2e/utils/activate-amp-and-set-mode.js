@@ -71,21 +71,24 @@ export const setAMPMode = async ( mode ) => {
 	// eslint-disable-next-line react-hooks/rules-of-hooks
 	useRequestInterception( ( request ) => {
 		if ( request.url().match( 'scannable-urls' ) ) {
-			request.respond( {
-				status: 200,
-				body: JSON.stringify( [
-					{
-						url: 'http://localhost:9002/',
-						type: 'is_home',
-						label: 'Homepage',
-						amp_url: 'http://localhost:9002/?amp=1',
-						validation_errors: [],
-						stale: false,
-					},
-				] ),
-			} );
+			request.respond(
+				{
+					status: 200,
+					body: JSON.stringify( [
+						{
+							url: 'http://localhost:9002/',
+							type: 'is_home',
+							label: 'Homepage',
+							amp_url: 'http://localhost:9002/?amp=1',
+							validation_errors: [],
+							stale: false,
+						},
+					] ),
+				},
+				10
+			);
 		} else {
-			request.continue( {}, 1 );
+			request.continue( {}, 5 );
 		}
 	} );
 

@@ -104,29 +104,32 @@ describe( 'User Input Settings', () => {
 			const url = request.url();
 
 			if ( url.startsWith( 'https://sitekit.withgoogle.com' ) ) {
-				request.respond( {
-					status: 302,
-					headers: {
-						location: createURL(
-							'/wp-admin/index.php',
-							[
-								'oauth2callback=1',
-								'code=valid-test-code',
-								'e2e-site-verification=1',
-							].join( '&' )
-						),
+				request.respond(
+					{
+						status: 302,
+						headers: {
+							location: createURL(
+								'/wp-admin/index.php',
+								[
+									'oauth2callback=1',
+									'code=valid-test-code',
+									'e2e-site-verification=1',
+								].join( '&' )
+							),
+						},
 					},
-				} );
+					10
+				);
 			} else if (
 				url.match(
 					'/google-site-kit/v1/core/user/data/user-input-settings'
 				)
 			) {
-				request.continue();
+				request.continue( {}, 5 );
 			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
-				request.respond( { status: 200 } );
+				request.respond( { status: 200 }, 10 );
 			} else {
-				request.continue();
+				request.continue( {}, 5 );
 			}
 		} );
 	} );
