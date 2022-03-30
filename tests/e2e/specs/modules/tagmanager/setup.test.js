@@ -68,26 +68,20 @@ describe( 'Tag Manager module setup', () => {
 					.url()
 					.match( 'google-site-kit/v1/core/site/data/notifications' )
 			) {
-				request.respond(
-					{
-						status: 200,
-						body: JSON.stringify( [] ),
-					},
-					10
-				);
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [] ),
+				} );
 			} else if (
 				request
 					.url()
 					.match( 'modules/tagmanager/data/live-container-version' )
 			) {
 				// Return a live container version without GA.
-				request.respond(
-					{
-						status: 200,
-						body: JSON.stringify( liveContainerVersionFixture ),
-					},
-					10
-				);
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( liveContainerVersionFixture ),
+				} );
 			} else if (
 				request
 					.url()
@@ -95,7 +89,7 @@ describe( 'Tag Manager module setup', () => {
 						/^https:\/\/www\.googletagmanager\.com\/(gtm\.js|amp\.json)/
 					)
 			) {
-				request.respond( { status: 200 }, 10 );
+				request.respond( { status: 200 } );
 			} else if (
 				request
 					.url()
@@ -103,10 +97,7 @@ describe( 'Tag Manager module setup', () => {
 						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 					)
 			) {
-				request.respond(
-					{ status: 200, body: JSON.stringify( {} ) },
-					10
-				);
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else if (
 				request
 					.url()
@@ -114,12 +105,9 @@ describe( 'Tag Manager module setup', () => {
 						'google-site-kit/v1/modules/search-console/data/searchanalytics'
 					)
 			) {
-				request.respond(
-					{ status: 200, body: JSON.stringify( {} ) },
-					10
-				);
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
-				request.continue( {}, 5 );
+				request.continue();
 			}
 		} );
 	} );

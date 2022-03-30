@@ -32,7 +32,7 @@ async function proceedToSetUpAnalytics() {
 
 let tagPermissionRequestHandler = ( request ) =>
 	// eslint-disable-next-line no-console
-	console.warn( 'Unhandled tag permission!', request.continue( {}, 5 ) );
+	console.warn( 'Unhandled tag permission!', request.continue() );
 
 describe( 'setting up the Analytics module with an existing account and existing tag', () => {
 	beforeAll( async () => {
@@ -52,10 +52,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 						'google-site-kit/v1/modules/search-console/data/searchanalytics'
 					)
 			) {
-				request.respond(
-					{ status: 200, body: JSON.stringify( {} ) },
-					10
-				);
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else if (
 				request
 					.url()
@@ -63,10 +60,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 					)
 			) {
-				request.respond(
-					{ status: 200, body: JSON.stringify( {} ) },
-					10
-				);
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else if (
 				request
 					.url()
@@ -74,13 +68,10 @@ describe( 'setting up the Analytics module with an existing account and existing
 						'/wp-json/google-site-kit/v1/modules/analytics/data/report?'
 					)
 			) {
-				request.respond(
-					{
-						status: 200,
-						body: JSON.stringify( [] ),
-					},
-					10
-				);
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [] ),
+				} );
 			} else if (
 				request
 					.url()
@@ -88,44 +79,32 @@ describe( 'setting up the Analytics module with an existing account and existing
 						'google-site-kit/v1/modules/analytics-4/data/create-property'
 					)
 			) {
-				request.respond(
-					{
-						body: JSON.stringify( fixtures.createProperty ),
-						status: 200,
-					},
-					10
-				);
+				request.respond( {
+					body: JSON.stringify( fixtures.createProperty ),
+					status: 200,
+				} );
 			} else if (
 				request.url().match( 'analytics-4/data/create-webdatastream' )
 			) {
-				request.respond(
-					{
-						body: JSON.stringify( fixtures.createWebDataStream ),
-						status: 200,
-					},
-					10
-				);
+				request.respond( {
+					body: JSON.stringify( fixtures.createWebDataStream ),
+					status: 200,
+				} );
 			} else if (
 				request
 					.url()
 					.match( 'google-site-kit/v1/modules/analytics/data/goals' )
 			) {
-				request.respond(
-					{ status: 200, body: JSON.stringify( {} ) },
-					10
-				);
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
-				request.respond(
-					{
-						status: 200,
-						body: JSON.stringify( [] ),
-					},
-					10
-				);
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [] ),
+				} );
 			}
 
 			if ( ! request._interceptionHandled ) {
-				request.continue( {}, 5 );
+				request.continue();
 			}
 		} );
 	} );
@@ -161,16 +140,13 @@ describe( 'setting up the Analytics module with an existing account and existing
 			propertyID: 'UA-100-1',
 		};
 		tagPermissionRequestHandler = ( request ) => {
-			request.respond(
-				{
-					status: 200,
-					body: JSON.stringify( {
-						...existingTag,
-						permission: true,
-					} ),
-				},
-				10
-			);
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( {
+					...existingTag,
+					permission: true,
+				} ),
+			} );
 		};
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 		await proceedToSetUpAnalytics();
@@ -234,16 +210,13 @@ describe( 'setting up the Analytics module with an existing account and existing
 			propertyID: 'UA-999-9',
 		};
 		tagPermissionRequestHandler = ( request ) => {
-			request.respond(
-				{
-					status: 200,
-					body: JSON.stringify( {
-						...existingTag,
-						permission: false,
-					} ),
-				},
-				10
-			);
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( {
+					...existingTag,
+					permission: false,
+				} ),
+			} );
 		};
 
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );
@@ -272,16 +245,13 @@ describe( 'setting up the Analytics module with an existing account and existing
 			propertyID: 'G-99999999',
 		};
 		tagPermissionRequestHandler = ( request ) => {
-			request.respond(
-				{
-					status: 200,
-					body: JSON.stringify( {
-						...existingTag,
-						permission: false,
-					} ),
-				},
-				10
-			);
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( {
+					...existingTag,
+					permission: false,
+				} ),
+			} );
 		};
 
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );

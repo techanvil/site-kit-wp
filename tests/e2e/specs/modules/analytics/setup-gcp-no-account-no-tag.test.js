@@ -46,23 +46,20 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					.url()
 					.startsWith( 'https://accounts.google.com/o/oauth2/auth' )
 			) {
-				request.respond(
-					{
-						status: 302,
-						headers: {
-							location: createURL(
-								'/wp-admin/index.php',
-								[
-									'oauth2callback=1',
-									'code=valid-test-code',
-									'e2e-site-verification=1',
-									'scope=TEST_ALL_SCOPES',
-								].join( '&' )
-							),
-						},
+				request.respond( {
+					status: 302,
+					headers: {
+						location: createURL(
+							'/wp-admin/index.php',
+							[
+								'oauth2callback=1',
+								'code=valid-test-code',
+								'e2e-site-verification=1',
+								'scope=TEST_ALL_SCOPES',
+							].join( '&' )
+						),
 					},
-					10
-				);
+				} );
 			} else if (
 				request
 					.url()
@@ -70,13 +67,10 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 						'/wp-json/google-site-kit/v1/modules/analytics/data/report?'
 					)
 			) {
-				request.respond(
-					{
-						status: 200,
-						body: JSON.stringify( [] ),
-					},
-					10
-				);
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [] ),
+				} );
 			} else if (
 				request
 					.url()
@@ -84,10 +78,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 					)
 			) {
-				request.respond(
-					{ status: 200, body: JSON.stringify( {} ) },
-					10
-				);
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else if (
 				request
 					.url()
@@ -95,59 +86,41 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 						'google-site-kit/v1/modules/search-console/data/searchanalytics'
 					)
 			) {
-				request.respond(
-					{ status: 200, body: JSON.stringify( {} ) },
-					10
-				);
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else if (
 				request
 					.url()
 					.match( 'google-site-kit/v1/modules/analytics/data/goals' )
 			) {
-				request.respond(
-					{ status: 200, body: JSON.stringify( {} ) },
-					10
-				);
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else if (
 				request.url().match( 'analytics-4/data/account-summaries' )
 			) {
-				request.respond(
-					{
-						status: 200,
-						body: JSON.stringify( {} ),
-					},
-					10
-				);
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} );
 			} else if (
 				request.url().match( 'analytics-4/data/create-property' )
 			) {
-				request.respond(
-					{
-						body: JSON.stringify( fixtures.createProperty ),
-						status: 200,
-					},
-					10
-				);
+				request.respond( {
+					body: JSON.stringify( fixtures.createProperty ),
+					status: 200,
+				} );
 			} else if (
 				request.url().match( 'analytics-4/data/create-webdatastream' )
 			) {
-				request.respond(
-					{
-						body: JSON.stringify( fixtures.createWebDataStream ),
-						status: 200,
-					},
-					10
-				);
+				request.respond( {
+					body: JSON.stringify( fixtures.createWebDataStream ),
+					status: 200,
+				} );
 			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
-				request.respond(
-					{
-						status: 200,
-						body: JSON.stringify( [] ),
-					},
-					10
-				);
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [] ),
+				} );
 			} else {
-				request.continue( {}, 5 );
+				request.continue();
 			}
 		} );
 	} );

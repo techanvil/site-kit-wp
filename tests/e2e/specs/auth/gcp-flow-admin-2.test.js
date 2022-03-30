@@ -30,18 +30,15 @@ describe( 'the set up flow for the second administrator', () => {
 					.url()
 					.startsWith( 'https://accounts.google.com/o/oauth2/auth' )
 			) {
-				request.respond(
-					{
-						status: 302,
-						headers: {
-							location: createURL(
-								'/wp-admin/index.php',
-								'oauth2callback=1&code=valid-test-code'
-							),
-						},
+				request.respond( {
+					status: 302,
+					headers: {
+						location: createURL(
+							'/wp-admin/index.php',
+							'oauth2callback=1&code=valid-test-code'
+						),
 					},
-					10
-				);
+				} );
 			} else if (
 				request
 					.url()
@@ -49,10 +46,7 @@ describe( 'the set up flow for the second administrator', () => {
 						'google-site-kit/v1/modules/search-console/data/searchanalytics'
 					)
 			) {
-				request.respond(
-					{ status: 200, body: JSON.stringify( {} ) },
-					10
-				);
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else if (
 				request
 					.url()
@@ -60,12 +54,9 @@ describe( 'the set up flow for the second administrator', () => {
 						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 					)
 			) {
-				request.respond(
-					{ status: 200, body: JSON.stringify( {} ) },
-					10
-				);
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
-				request.continue( {}, 5 );
+				request.continue();
 			}
 		} );
 	} );

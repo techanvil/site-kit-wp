@@ -48,17 +48,14 @@ describe( 'AMP Admin Bar compatibility', () => {
 						'google-site-kit/v1/modules/search-console/data/searchanalytics?'
 					)
 			) {
-				request.respond(
-					{
-						status: 200,
-						body: JSON.stringify(
-							mockBatchResponse[
-								'modules::search-console::searchanalytics::e74216dd17533dcb67fa2d433c23467c'
-							]
-						),
-					},
-					10
-				);
+				request.respond( {
+					status: 200,
+					body: JSON.stringify(
+						mockBatchResponse[
+							'modules::search-console::searchanalytics::e74216dd17533dcb67fa2d433c23467c'
+						]
+					),
+				} );
 			} else if (
 				request
 					.url()
@@ -66,19 +63,16 @@ describe( 'AMP Admin Bar compatibility', () => {
 						'google-site-kit/v1/modules/analytics/data/report?'
 					)
 			) {
-				request.respond(
-					{
-						status: 200,
-						body: JSON.stringify(
-							mockBatchResponse[
-								'modules::analytics::report::db20ba9afa3000cd79e2888048a1700c'
-							]
-						),
-					},
-					10
-				);
+				request.respond( {
+					status: 200,
+					body: JSON.stringify(
+						mockBatchResponse[
+							'modules::analytics::report::db20ba9afa3000cd79e2888048a1700c'
+						]
+					),
+				} );
 			} else {
-				request.continue( {}, 5 );
+				request.continue();
 			}
 		} );
 	} );

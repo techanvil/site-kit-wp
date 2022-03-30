@@ -33,10 +33,7 @@ describe( 'core site notifications', () => {
 						'google-site-kit/v1/modules/search-console/data/searchanalytics'
 					)
 			) {
-				request.respond(
-					{ status: 200, body: JSON.stringify( {} ) },
-					10
-				);
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else if (
 				request
 					.url()
@@ -44,12 +41,9 @@ describe( 'core site notifications', () => {
 						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 					)
 			) {
-				request.respond(
-					{ status: 200, body: JSON.stringify( {} ) },
-					10
-				);
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
-				request.continue( {}, 5 );
+				request.continue();
 			}
 		} );
 	} );

@@ -54,13 +54,10 @@ describe( 'date range filtering on dashboard views', () => {
 			const url = request.url();
 
 			if ( url.match( 'notifications' ) ) {
-				request.respond(
-					{
-						status: 200,
-						body: JSON.stringify( [] ),
-					},
-					10
-				);
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [] ),
+				} );
 			} else if ( url.match( 'google-site-kit/v1/modules/analytics' ) ) {
 				const query = getQueryArgs( url );
 				// @TODO The total sessions can be the same even if different dates are selected,
@@ -70,15 +67,12 @@ describe( 'date range filtering on dashboard views', () => {
 				const response = getAnalyticsMockResponse( query );
 				response[ 0 ].data.rows[ 0 ].dimensions = [ '/' ]; // needed for valid isValidDimensionFilters
 
-				request.respond(
-					{
-						status: 200,
-						body: JSON.stringify( response ),
-					},
-					10
-				);
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( response ),
+				} );
 			} else {
-				request.continue( {}, 5 );
+				request.continue();
 			}
 		} );
 	} );
