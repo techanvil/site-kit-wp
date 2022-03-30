@@ -69,68 +69,20 @@ export const setAMPMode = async ( mode ) => {
 		() => window.ampSettings && window.ampSettings.OPTIONS_REST_PATH
 	);
 	if ( optionsRESTPath ) {
-		// const waitForFetchRequests = createWaitForFetchRequests(); TODO: Move this above visitAdminPage?
-
-		const scannableURLsRESTPath = await page.evaluate(
-			() => window.ampSettings.SCANNABLE_URLS_REST_PATH
-		);
-
-		await page.waitForSelector( `#template-mode-${ ampMode }` );
-
-		const isAlreadySet = await page.evaluate( ( theAMPMode ) => {
-			const templateMode = document.querySelector(
-				`#template-mode-${ theAMPMode }`
-			);
-			return templateMode.checked;
-		}, ampMode );
-
-		if ( isAlreadySet ) {
-			return;
-		}
-
-		await page.evaluate( ( theAMPMode ) => {
-			const radio = document.querySelector(
-				`#template-mode-${ theAMPMode }`
-			);
-			radio.click();
-		}, ampMode );
-		// await step(
-		// 	`click on the AMP mode option ${ ampMode }`,
-		// 	page.click( `#template-mode-${ ampMode }` )
-		// );
-		// await page.click( `#template-mode-${ ampMode }` );
-		// await expect( page ).toClick( `#template-mode-${ ampMode }` );
-
 		await Promise.all( [
-			page.click( 'button[type="submit"]' ),
-
 			page.waitForResponse( ( res ) =>
 				res.url().match( optionsRESTPath )
 			),
-			// wpApiFetch( {
-			// 	method: 'post',
-			// 	path: optionsRESTPath,
-			// 	data: {
-			// 		theme_support: ampMode,
-			// 	},
-			// } ),
-			// This:
-			page.waitForResponse( ( res ) =>
-				res.url().match( scannableURLsRESTPath )
-			),
+			wpApiFetch( {
+				method: 'post',
+				path: optionsRESTPath,
+				data: {
+					theme_support: ampMode,
+				},
+			} ),
 		] );
-		// It looks like we might need to wait for something here to prevent SiteScanContextProvider from throwing its error.
-
-		// await waitForFetchRequests(); // Clean up request listeners.
-
 		return;
 	}
-	// if ( optionsRESTPath ) {
-	// 	await expect( page ).toClick( `#template-mode-${ ampMode }` );
-	// 	await expect( page ).toClick( 'button[type="submit"]' );
-	// 	await page.waitForNavigation();
-	// 	return;
-	// }
 
 	// AMP v1
 	await expect( page ).toClick( `#theme_support_${ ampMode }` );
