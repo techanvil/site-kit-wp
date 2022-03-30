@@ -85,7 +85,7 @@ export const setAMPMode = async ( mode ) => {
 				] ),
 			} );
 		} else {
-			request.continue();
+			request.continue( {}, 1 );
 		}
 	} );
 
