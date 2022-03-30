@@ -131,7 +131,7 @@ function removePageEvents() {
  * @since 1.0.0
  */
 function observeConsoleLogging() {
-	page.on( 'console', ( message ) => {
+	page.on( 'console', async ( message ) => {
 		const type = message.type();
 		if ( ! OBSERVED_CONSOLE_MESSAGE_TYPES.hasOwnProperty( type ) ) {
 			return;
@@ -184,7 +184,6 @@ function observeConsoleLogging() {
 			return;
 		}
 
-		// HERE?
 		// Some error messages which don't impact test results can
 		// be safely ignored.
 		if (
@@ -196,6 +195,16 @@ function observeConsoleLogging() {
 		) {
 			return;
 		}
+
+		// Prevent sporadic AMP plugin error, which doesn't impact the test results, from breaking the test suite.
+		// const stackTrace = message.stackTrace();
+		// if (
+		// 	stackTrace[ stackTrace.length - 1 ].url.includes(
+		// 		'assets/js/amp-settings.js'
+		// 	)
+		// ) {
+		// 	return;
+		// }
 
 		// WordPress 5.3 logs when a block is saved and causes console logs
 		// that should not cause failures.
@@ -230,17 +239,17 @@ function observeConsoleLogging() {
 			text
 		);
 
-		// const args = await Promise.all(
-		// 	message.args().map( ( messageArg ) =>
-		// 		messageArg.executionContext().evaluate( ( arg ) => {
-		// 			// I'm in a page context now. If my arg is an error - get me its message.
-		// 			if ( arg instanceof Error ) return arg.message;
-		// 			// return arg right away. since we use `executionContext.evaluate`, it'll return JSON value of
-		// 			// the argument if possible, or `undefined` if it fails to stringify it.
-		// 			return arg;
-		// 		}, messageArg )
-		// 	)
-		// );
+		const args = await Promise.all(
+			message.args().map( ( messageArg ) =>
+				messageArg.executionContext().evaluate( ( arg ) => {
+					// I'm in a page context now. If my arg is an error - get me its message.
+					if ( arg instanceof Error ) return arg.message;
+					// return arg right away. since we use `executionContext.evaluate`, it'll return JSON value of
+					// the argument if possible, or `undefined` if it fails to stringify it.
+					return arg;
+				}, messageArg )
+			)
+		);
 
 		// Disable reason: We intentionally bubble up the console message
 		// which, unless the test explicitly anticipates the logging via
@@ -248,7 +257,7 @@ function observeConsoleLogging() {
 		// failure.
 
 		// eslint-disable-next-line no-console
-		console[ logFunction ]( message );
+		console[ logFunction ]( args );
 		// console[ logFunction ]( text );
 	} );
 }
