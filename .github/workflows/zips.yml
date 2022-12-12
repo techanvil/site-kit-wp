@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - main
+      - infra/6315-fix-zip-files
       - 'feature/**'
       - 'release/**'
     paths:
