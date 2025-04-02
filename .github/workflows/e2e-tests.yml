@@ -101,9 +101,7 @@ jobs:
               uses: actions/cache@v4
               id: global-npm-cache
               with:
-                  path: |
-                      ~/.npm-global
-                      ~/.local/lib/node_modules
+                  path: /opt/hostedtoolcache/node/14.21.3/x64/lib/node_modules
                   key: global-npm-${{ runner.os }}-7.24.2
 
             - name: Check npm configuration
@@ -122,9 +120,7 @@ jobs:
               if: steps.global-npm-cache.outputs.cache-hit != 'true'
               uses: actions/cache/save@v4
               with:
-                  path: |
-                      ~/.npm-global
-                      ~/.local/lib/node_modules
+                  path: /opt/hostedtoolcache/node/14.21.3/x64/lib/node_modules
                   key: global-npm-${{ runner.os }}-7.24.2
 
             # Using static cache keys since only test files change between runs for this exercise.
