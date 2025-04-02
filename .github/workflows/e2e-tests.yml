@@ -105,7 +105,6 @@ jobs:
                       ~/.npm-global
                       ~/.local/lib/node_modules
                   key: global-npm-${{ runner.os }}-7.24.2
-                  restore-keys: global-npm-${{ runner.os }}-
 
             - name: Check npm configuration
               run: |
@@ -138,7 +137,6 @@ jobs:
                       ${{ github.workspace }}/node_modules
                       ~/.npm
                   key: deps-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-                  restore-keys: deps-${{ runner.os }}-
 
             - name: npm install
               if: steps.npm-cache.outputs.cache-hit != 'true'
@@ -153,13 +151,16 @@ jobs:
                       ~/.npm
                   key: deps-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
+            - name: Get assets last commit
+              id: assets-commit
+              run: echo "hash=$(git rev-list -1 HEAD -- ./assets)" >> "$GITHUB_OUTPUT"
+
             - name: Restore build cache
               uses: actions/cache@v4
               id: build-cache
               with:
                   path: dist
-                  key: build-${{ runner.os }}-${{ github.sha }}
-                  restore-keys: build-${{ runner.os }}-
+                  key: build-${{ runner.os }}-${{ steps.assets-commit.outputs.hash }}
 
             - name: Build
               if: steps.build-cache.outputs.cache-hit != 'true'
@@ -170,7 +171,7 @@ jobs:
               uses: actions/cache/save@v4
               with:
                   path: dist
-                  key: build-${{ runner.os }}-${{ github.sha }}
+                  key: build-${{ runner.os }}-${{ steps.assets-commit.outputs.hash }}
 
             # E2E tests use a dedicated container, this is just for Composer.
             - uses: shivammathur/setup-php@v2
@@ -193,7 +194,6 @@ jobs:
                       vendor
                       third-party
                   key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
-                  restore-keys: composer-${{ runner.os }}-
 
             - name: Composer Install
               if: steps.composer-cache-step.outputs.cache-hit != 'true'
