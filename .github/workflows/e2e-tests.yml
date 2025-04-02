@@ -104,8 +104,8 @@ jobs:
                   path: |
                       ~/.npm-global
                       ~/.local/lib/node_modules
-                  key: ${{ runner.os }}-global-npm-7.24.2
-                  restore-keys: ${{ runner.os }}-global-npm-
+                  key: global-npm-${{ runner.os }}-7.24.2
+                  restore-keys: global-npm-${{ runner.os }}-
 
             - name: Check npm configuration
               run: |
@@ -126,7 +126,7 @@ jobs:
                   path: |
                       ~/.npm-global
                       ~/.local/lib/node_modules
-                  key: ${{ runner.os }}-global-npm-7.24.2
+                  key: global-npm-${{ runner.os }}-7.24.2
 
             # Using static cache keys since only test files change between runs for this exercise.
             # Dependencies and build output are deterministic and can be cached permanently.
@@ -137,9 +137,8 @@ jobs:
                   path: |
                       ${{ github.workspace }}/node_modules
                       ~/.npm
-                  key: npm-deps-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-                  restore-keys: |
-                      npm-deps-${{ runner.os }}-
+                  key: deps-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+                  restore-keys: deps-${{ runner.os }}-
 
             - name: npm install
               if: steps.npm-cache.outputs.cache-hit != 'true'
@@ -152,15 +151,15 @@ jobs:
                   path: |
                       ${{ github.workspace }}/node_modules
                       ~/.npm
-                  key: npm-deps-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+                  key: deps-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
             - name: Restore build cache
               uses: actions/cache@v4
               id: build-cache
               with:
                   path: dist
-                  key: ${{ runner.os }}-build
-                  restore-keys: ${{ runner.os }}-build-
+                  key: build-${{ runner.os }}-${{ github.sha }}
+                  restore-keys: build-${{ runner.os }}-
 
             - name: Build
               if: steps.build-cache.outputs.cache-hit != 'true'
@@ -171,7 +170,7 @@ jobs:
               uses: actions/cache/save@v4
               with:
                   path: dist
-                  key: ${{ runner.os }}-build
+                  key: build-${{ runner.os }}-${{ github.sha }}
 
             # E2E tests use a dedicated container, this is just for Composer.
             - uses: shivammathur/setup-php@v2
@@ -193,8 +192,8 @@ jobs:
                       ${{ steps.composer-cache.outputs.dir }}
                       vendor
                       third-party
-                  key: ${{ runner.os }}-composer-deps
-                  restore-keys: ${{ runner.os }}-composer-
+                  key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+                  restore-keys: composer-${{ runner.os }}-
 
             - name: Composer Install
               if: steps.composer-cache-step.outputs.cache-hit != 'true'
@@ -208,7 +207,7 @@ jobs:
                       ${{ steps.composer-cache.outputs.dir }}
                       vendor
                       third-party
-                  key: ${{ runner.os }}-composer-deps
+                  key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
 
             - name: Start environment
               run: npm run env:start
