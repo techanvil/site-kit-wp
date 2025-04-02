@@ -106,22 +106,46 @@ async function runTests( args ) {
 	let attempt = 1;
 	while ( attempt <= maxRetries ) {
 		console.log( `\n🔄 Attempt ${ attempt } of ${ maxRetries }` );
-		const testArgs = [
-			...args,
-			retryTest ? `-t="${ retryTest }"` : '', // Focus on specific test if provided
-		].filter( Boolean );
-
 		try {
-			const jestResult = await jest.runCLI( { _: testArgs }, [
+			const jestResult = await jest.runCLI( { _: args }, [
 				process.cwd(),
 			] );
-			if ( jestResult.results.success === false ) {
-				console.log( `\n🎯 Test failed on attempt ${ attempt }` );
-				process.exit( 1 );
+
+			// If no specific test is targeted, check overall success
+			if ( ! retryTest ) {
+				if ( jestResult.results.success === false ) {
+					console.log( `\n🎯 Test failed on attempt ${ attempt }` );
+					process.exit( 1 );
+				}
+				console.log(
+					`\n✅ Tests passed on attempt ${ attempt }, continuing...`
+				);
+			} else {
+				// Check if the specific test failed
+				const testResult = jestResult.results.testResults.find(
+					( test ) =>
+						test.testResults.some( ( t ) =>
+							t.title.includes( retryTest )
+						)
+				);
+
+				if (
+					testResult &&
+					testResult.testResults.some(
+						( t ) =>
+							t.title.includes( retryTest ) &&
+							t.status === 'failed'
+					)
+				) {
+					console.log(
+						`\n🎯 Target test "${ retryTest }" failed on attempt ${ attempt }`
+					);
+					process.exit( 1 );
+				}
+				console.log(
+					`\n✅ Target test "${ retryTest }" passed on attempt ${ attempt }, continuing...`
+				);
 			}
-			console.log(
-				`\n✅ Tests passed on attempt ${ attempt }, continuing...`
-			);
 		} catch ( error ) {
 			console.log(
 				`\n💥 Test failed with error on attempt ${ attempt }:`,
