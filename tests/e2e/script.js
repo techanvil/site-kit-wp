@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 
 /**
  * E2E Test Script Runner
@@ -55,6 +56,11 @@ const getArgFromCLI = ( arg ) => {
 
 const hasArgInCLI = ( arg ) => getArgFromCLI( arg ) !== undefined;
 
+// New retry-until-failure configuration
+const maxRetries = parseInt( getArgFromCLI( '--max-retries' ) || '100', 10 );
+const retryUntilFailure = hasArgInCLI( '--retry-until-failure' );
+const retryTest = getArgFromCLI( '--retry-test' );
+
 const result = spawn( 'node', [ require.resolve( 'puppeteer/install' ) ], {
 	stdio: 'inherit',
 } );
@@ -92,4 +98,45 @@ Object.entries( configsMapping ).forEach( ( [ envKey, argName ] ) => {
 
 const cleanUpPrefixes = [ '--puppeteer-', '--wordpress-' ];
 
-jest.run( [ ...config, ...runInBand, ...getArgsFromCLI( cleanUpPrefixes ) ] );
+async function runTests( args ) {
+	if ( ! retryUntilFailure ) {
+		return jest.run( args );
+	}
+
+	let attempt = 1;
+	while ( attempt <= maxRetries ) {
+		console.log( `\n🔄 Attempt ${ attempt } of ${ maxRetries }` );
+		const testArgs = [
+			...args,
+			retryTest ? `-t="${ retryTest }"` : '', // Focus on specific test if provided
+		].filter( Boolean );
+
+		try {
+			const jestResult = await jest.runCLI( { _: testArgs }, [
+				process.cwd(),
+			] );
+			if ( jestResult.results.success === false ) {
+				console.log( `\n🎯 Test failed on attempt ${ attempt }` );
+				process.exit( 1 );
+			}
+			console.log(
+				`\n✅ Tests passed on attempt ${ attempt }, continuing...`
+			);
+		} catch ( error ) {
+			console.log(
+				`\n💥 Test failed with error on attempt ${ attempt }:`,
+				error
+			);
+			process.exit( 1 );
+		}
+		attempt++;
+	}
+	console.log( `\n⚠️ Test did not fail after ${ maxRetries } attempts` );
+	process.exit( 0 );
+}
+
+const args = [ ...config, ...runInBand, ...getArgsFromCLI( cleanUpPrefixes ) ];
+runTests( args ).catch( ( error ) => {
+	console.error( error );
+	process.exit( 1 );
+} );

@@ -2,6 +2,21 @@ name: E2E Tests
 
 on:
     workflow_dispatch:
+        inputs:
+            retry_test:
+                description: 'Test name to retry until failure (optional)'
+                required: false
+                type: string
+            max_retries:
+                description: 'Maximum number of retries (default: 100)'
+                required: false
+                type: number
+                default: 100
+            retry_until_failure:
+                description: 'Keep running tests until failure'
+                required: false
+                type: boolean
+                default: false
     push:
         branches:
             - develop
@@ -209,7 +224,15 @@ jobs:
               run: npm run env:start
 
             - name: Run the tests
-              run: npm run test:e2e
+              run: |
+                  if [[ "${{ github.event.inputs.retry_until_failure }}" == "true" ]]; then
+                      export TEST_NAME="${{ github.event.inputs.retry_test }}"
+                      export MAX_RETRIES="${{ github.event.inputs.max_retries }}"
+                      NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e:retry-until-failure -w ./tests/e2e
+                  else
+                      npm run test:e2e
+                  fi
+              working-directory: tests/e2e
 
             - name: Upload artifacts
               uses: actions/upload-artifact@v4
