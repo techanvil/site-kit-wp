@@ -121,7 +121,7 @@ jobs:
 
             - name: Save global npm cache
               if: steps.global-npm-cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v4
+              uses: actions/cache/save@v4
               with:
                   path: |
                       ~/.npm-global
@@ -135,10 +135,11 @@ jobs:
               id: npm-cache
               with:
                   path: |
+                      ${{ github.workspace }}/node_modules
                       ~/.npm
-                      node_modules
-                  key: ${{ runner.os }}-npm-deps
-                  restore-keys: ${{ runner.os }}-npm-
+                  key: npm-deps-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+                  restore-keys: |
+                      npm-deps-${{ runner.os }}-
 
             - name: npm install
               if: steps.npm-cache.outputs.cache-hit != 'true'
@@ -146,12 +147,12 @@ jobs:
 
             - name: Save npm dependencies cache
               if: steps.npm-cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v4
+              uses: actions/cache/save@v4
               with:
                   path: |
+                      ${{ github.workspace }}/node_modules
                       ~/.npm
-                      node_modules
-                  key: ${{ runner.os }}-npm-deps
+                  key: npm-deps-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
             - name: Restore build cache
               uses: actions/cache@v4
@@ -167,7 +168,7 @@ jobs:
 
             - name: Save build cache
               if: steps.build-cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v4
+              uses: actions/cache/save@v4
               with:
                   path: dist
                   key: ${{ runner.os }}-build
@@ -201,7 +202,7 @@ jobs:
 
             - name: Save composer cache
               if: steps.composer-cache-step.outputs.cache-hit != 'true'
-              uses: actions/cache@v4
+              uses: actions/cache/save@v4
               with:
                   path: |
                       ${{ steps.composer-cache.outputs.dir }}
