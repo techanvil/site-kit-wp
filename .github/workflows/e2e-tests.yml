@@ -17,6 +17,21 @@ on:
                 required: false
                 type: boolean
                 default: false
+            debug_redux:
+                description: 'Enable Redux debug logging'
+                required: false
+                type: boolean
+                default: false
+            debug_nav:
+                description: 'Enable navigation debug logging'
+                required: false
+                type: boolean
+                default: true
+            debug_rest:
+                description: 'Enable REST API debug logging'
+                required: false
+                type: boolean
+                default: true
     push:
         branches:
             - develop
@@ -244,7 +259,11 @@ jobs:
                   while [ "${current_attempt}" -le "${{ github.event.inputs.max_retries || 1000 }}" ]; do
                       echo "Attempt ${current_attempt} of ${{ github.event.inputs.max_retries || 1000 }} (output will only be shown if the target test fails)..."
                       # Run tests and capture output
-                      if ! CURRENT_ATTEMPT="${current_attempt}" npm run test:e2e > test-output.log 2>&1; then
+                      if ! CURRENT_ATTEMPT="${current_attempt}" \
+                          ${{ github.event.inputs.debug_redux == true && 'DEBUG_REDUX=1' || '' }} \
+                          ${{ github.event.inputs.debug_nav != false && 'DEBUG_NAV=1' || '' }} \
+                          ${{ github.event.inputs.debug_rest != false && 'DEBUG_REST=1' || '' }} \
+                          npm run test:e2e > test-output.log 2>&1; then
                           # Check if the specific test failed
                           if node "${{ github.workspace }}/tests/e2e/check-test-result.js"; then
                               echo "Target test failed on attempt ${current_attempt}"
