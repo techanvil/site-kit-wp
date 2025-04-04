@@ -276,7 +276,12 @@ jobs:
                           echo "All tests passed on attempt ${current_attempt}, continuing..."
                       fi
                       current_attempt=$(( current_attempt + 1 ))
-                      npm run env:reset-site
+                      echo "Resetting site..."
+                      if ! npm run env:reset-site > reset-output.log 2>&1; then
+                          echo "Error resetting site:"
+                          cat reset-output.log
+                          exit 1
+                      fi
                       sleep 1
                   done
                   echo "Reached maximum number of retries (${{ github.event.inputs.max_retries || 1000 }}) without test failure"
@@ -286,7 +291,6 @@ jobs:
             - name: Run the tests (normal mode)
               if: github.event.inputs.retry_until_failure != 'true'
               run: npm run test:e2e
-              working-directory: tests/e2e
 
             - name: Upload artifacts
               uses: actions/upload-artifact@v4
