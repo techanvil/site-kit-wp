@@ -110,15 +110,26 @@ jobs:
                   node-version-file: '.nvmrc'
                   cache: 'npm'
 
+            # - name: Restore global npm cache
+            #   uses: actions/cache@v4
+            #   id: global-npm-cache
+            #   with:
+            #       path: /opt/hostedtoolcache/node/14.21.3/x64/lib/node_modules
+            #       key: global-npm-${{ runner.os }}-7.24.2
+
             # nvm@7 is the minimum version required for npm workspace support.
             # This is needed to prevent js lint failures due to module resolution to the workspace packages.
             # This can be removed once our node base version comes with nvm@7 or greater.
-            - name: Restore global npm cache
-              uses: actions/cache@v4
-              id: global-npm-cache
-              with:
-                  path: /opt/hostedtoolcache/node/14.21.3/x64/lib/node_modules
-                  key: global-npm-${{ runner.os }}-7.24.2
+            - name: Install npm Globally
+              #   if: steps.global-npm-cache.outputs.cache-hit != 'true'
+              run: npm run install-global-npm
+
+            # - name: Save global npm cache
+            #   if: steps.global-npm-cache.outputs.cache-hit != 'true'
+            #   uses: actions/cache/save@v4
+            #   with:
+            #       path: /opt/hostedtoolcache/node/14.21.3/x64/lib/node_modules
+            #       key: global-npm-${{ runner.os }}-7.24.2
 
             - name: Check npm configuration
               run: |
@@ -127,17 +138,6 @@ jobs:
                   echo "npm global dir: $(npm config get global-dir)"
                   echo "npm global bin: $(npm config get global-bin)"
                   echo "npm root -g: $(npm root -g)"
-
-            - name: Install npm Globally
-              if: steps.global-npm-cache.outputs.cache-hit != 'true'
-              run: npm run install-global-npm
-
-            - name: Save global npm cache
-              if: steps.global-npm-cache.outputs.cache-hit != 'true'
-              uses: actions/cache/save@v4
-              with:
-                  path: /opt/hostedtoolcache/node/14.21.3/x64/lib/node_modules
-                  key: global-npm-${{ runner.os }}-7.24.2
 
             # Using static cache keys since only test files change between runs for this exercise.
             # Dependencies and build output are deterministic and can be cached permanently.
