@@ -242,11 +242,14 @@ jobs:
               run: |
                   current_attempt="${ATTEMPT}"
                   while [ "${current_attempt}" -le "${{ github.event.inputs.max_retries || 1000 }}" ]; do
-                      echo "Attempt ${current_attempt} of ${{ github.event.inputs.max_retries || 1000 }}"
-                      if ! CURRENT_ATTEMPT="${current_attempt}" npm run test:e2e; then
+                      echo "Attempt ${current_attempt} of ${{ github.event.inputs.max_retries || 1000 }} (output will only be shown if the target test fails)..."
+                      # Run tests and capture output
+                      if ! CURRENT_ATTEMPT="${current_attempt}" npm run test:e2e > test-output.log 2>&1; then
                           # Check if the specific test failed
                           if node "${{ github.workspace }}/tests/e2e/check-test-result.js"; then
                               echo "Target test failed on attempt ${current_attempt}"
+                              echo "Test output:"
+                              cat test-output.log
                               exit 1
                           fi
                           echo "Other tests failed, continuing..."
