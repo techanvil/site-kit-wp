@@ -3,15 +3,15 @@ name: E2E Tests
 on:
     workflow_dispatch:
         inputs:
-            retry_test:
+            retry_test_name:
                 description: 'Test name to retry until failure (optional)'
                 required: false
                 type: string
             max_retries:
-                description: 'Maximum number of retries (default: 100)'
+                description: 'Maximum number of retries (default: 1000)'
                 required: false
                 type: number
-                default: 100
+                default: 1000
             retry_until_failure:
                 description: 'Keep running tests until failure'
                 required: false
@@ -100,6 +100,7 @@ jobs:
             AMP_VERSION: ''
             WP_VERSION: 'latest'
             CA_CERT_REFRESH: ''
+            ATTEMPT: 1
         steps:
             - uses: actions/checkout@v4
 
@@ -223,15 +224,39 @@ jobs:
             - name: Start environment
               run: npm run env:start
 
-            - name: Run the tests
+            # Set a unique ID for test results that includes run ID, attempt number, and timestamp
+            # Using $GITHUB_ENV makes this variable available to all subsequent steps automatically
+            - name: Set test results ID
+              id: set-test-results-id
+              run: echo "TEST_RESULTS_ID=$(date -u +'%Y%m%d-%H%M%S')-run-${{ github.run_id }}-attempt-${{ github.run_attempt }}" >> $GITHUB_ENV
+
+            - name: Run the tests (retry mode)
+              if: github.event.inputs.retry_until_failure == 'true'
+              env:
+                  RETRY_TEST_NAME: ${{ github.event.inputs.retry_test_name }}
               run: |
-                  if [[ "${{ github.event.inputs.retry_until_failure }}" == "true" ]]; then
-                      export TEST_NAME="${{ github.event.inputs.retry_test }}"
-                      export MAX_RETRIES="${{ github.event.inputs.max_retries }}"
-                      NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e:retry-until-failure -w ./tests/e2e
-                  else
-                      npm run test:e2e
-                  fi
+                  while [ ${{ env.ATTEMPT }} -le ${{ github.event.inputs.max_retries || 1000 }} ]; do
+                      echo "Attempt ${{ env.ATTEMPT }} of ${{ github.event.inputs.max_retries || 1000 }}"
+                      if ! NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e -w ./tests/e2e; then
+                          # Check if the specific test failed
+                          if node ${{ github.workspace }}/tests/e2e/check-test-result.js; then
+                              echo "Target test failed on attempt ${{ env.ATTEMPT }}"
+                              exit 1
+                          fi
+                          echo "Other tests failed, continuing..."
+                      else
+                          echo "All tests passed on attempt ${{ env.ATTEMPT }}, continuing..."
+                      fi
+                      echo "ATTEMPT=$(( ${{ env.ATTEMPT }} + 1 ))" >> $GITHUB_ENV
+                      sleep 1
+                  done
+                  echo "Reached maximum number of retries (${{ github.event.inputs.max_retries || 1000 }}) without test failure"
+                  exit 0
+              working-directory: tests/e2e
+
+            - name: Run the tests (normal mode)
+              if: github.event.inputs.retry_until_failure != 'true'
+              run: npm run test:e2e
               working-directory: tests/e2e
 
             - name: Upload artifacts
@@ -242,3 +267,4 @@ jobs:
                   path: |
                       ~/.npm/_logs/
                       tests/e2e/screenshots/
+                      tests/e2e/test-results.json

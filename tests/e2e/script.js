@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
 
 /**
  * E2E Test Script Runner
@@ -26,6 +25,7 @@ process.on( 'unhandledRejection', ( err ) => {
 /* eslint-disable-next-line jest/no-jest-import */
 const jest = require( 'jest' );
 const { sync: spawn } = require( 'cross-spawn' );
+const path = require( 'path' );
 
 // getArgsFromCLI inlined from @wordpress/scripts utils/process.js v12.0.0.
 // https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/utils/process.js#L1-L11
@@ -55,11 +55,6 @@ const getArgFromCLI = ( arg ) => {
 };
 
 const hasArgInCLI = ( arg ) => getArgFromCLI( arg ) !== undefined;
-
-// New retry-until-failure configuration
-const maxRetries = parseInt( getArgFromCLI( '--max-retries' ) || '100', 10 );
-const retryUntilFailure = hasArgInCLI( '--retry-until-failure' );
-const retryTest = getArgFromCLI( '--retry-test' );
 
 const result = spawn( 'node', [ require.resolve( 'puppeteer/install' ) ], {
 	stdio: 'inherit',
@@ -98,69 +93,89 @@ Object.entries( configsMapping ).forEach( ( [ envKey, argName ] ) => {
 
 const cleanUpPrefixes = [ '--puppeteer-', '--wordpress-' ];
 
-async function runTests( args ) {
-	if ( ! retryUntilFailure ) {
-		return jest.run( args );
-	}
+// Get the test name to check from environment variable
+const testToCheck = process.env.RETRY_TEST_NAME;
 
-	let attempt = 1;
-	while ( attempt <= maxRetries ) {
-		console.log( `\n🔄 Attempt ${ attempt } of ${ maxRetries }` );
-		try {
-			const jestResult = await jest.runCLI( { _: args }, [
-				process.cwd(),
-			] );
+// Create a dedicated directory for test results at repo root
+const repoRoot = path.resolve( __dirname, '../../' );
+const resultsDir = path.join( repoRoot, 'e2e-test-results' );
+const resultsID = process.env.TEST_RESULTS_ID || 'results';
+const resultsPath = path.join( resultsDir, `${ resultsID }.json` );
 
-			// If no specific test is targeted, check overall success
-			if ( ! retryTest ) {
-				if ( jestResult.results.success === false ) {
-					console.log( `\n🎯 Test failed on attempt ${ attempt }` );
-					process.exit( 1 );
-				}
-				console.log(
-					`\n✅ Tests passed on attempt ${ attempt }, continuing...`
-				);
-			} else {
-				// Check if the specific test failed
-				const testResult = jestResult.results.testResults.find(
-					( test ) =>
-						test.testResults.some( ( t ) =>
-							t.title.includes( retryTest )
-						)
-				);
+// Add JSON reporter if we're checking a specific test
+const additionalConfig = testToCheck
+	? [ '--json', `--outputFile=${ resultsPath }` ]
+	: [];
 
-				if (
-					testResult &&
-					testResult.testResults.some(
-						( t ) =>
-							t.title.includes( retryTest ) &&
-							t.status === 'failed'
-					)
-				) {
-					console.log(
-						`\n🎯 Target test "${ retryTest }" failed on attempt ${ attempt }`
+// Run the tests
+const args = [
+	...config,
+	...runInBand,
+	...getArgsFromCLI( cleanUpPrefixes ),
+	...additionalConfig,
+];
+
+// Run tests and wait for completion
+const runTests = async () => {
+	try {
+		// Ensure the results directory exists
+		const fs = require( 'fs' );
+		if ( ! fs.existsSync( resultsDir ) ) {
+			fs.mkdirSync( resultsDir, { recursive: true } );
+		}
+
+		await jest.run( args );
+
+		// If we're checking a specific test, analyze the results
+		if ( testToCheck ) {
+			try {
+				if ( ! fs.existsSync( resultsPath ) ) {
+					process.stdout.write(
+						`Error: Test results file not found at ${ resultsPath }\n`
 					);
 					process.exit( 1 );
 				}
-				console.log(
-					`\n✅ Target test "${ retryTest }" passed on attempt ${ attempt }, continuing...`
+
+				const testResults = JSON.parse(
+					fs.readFileSync( resultsPath, 'utf8' )
+				);
+
+				// Find the specific test result
+				const testResult = testResults.testResults.find( ( testFile ) =>
+					testFile.assertionResults.some( ( test ) =>
+						test.title.includes( testToCheck )
+					)
+				);
+
+				if ( testResult ) {
+					const specificTest = testResult.assertionResults.find(
+						( test ) => test.title.includes( testToCheck )
+					);
+
+					if ( specificTest ) {
+						// Exit with status 1 if the specific test failed
+						if ( specificTest.status === 'failed' ) {
+							process.stdout.write(
+								`\n🎯 Target test "${ testToCheck }" failed\n`
+							);
+							process.exit( 1 );
+						} else {
+							process.stdout.write(
+								`\n✅ Target test "${ testToCheck }" passed\n`
+							);
+						}
+					}
+				}
+			} catch ( error ) {
+				process.stdout.write(
+					`Error analyzing test results: ${ error }\n`
 				);
 			}
-		} catch ( error ) {
-			console.log(
-				`\n💥 Test failed with error on attempt ${ attempt }:`,
-				error
-			);
-			process.exit( 1 );
 		}
-		attempt++;
+	} catch ( error ) {
+		process.stdout.write( `Error running tests: ${ error }\n` );
+		process.exit( 1 );
 	}
-	console.log( `\n⚠️ Test did not fail after ${ maxRetries } attempts` );
-	process.exit( 0 );
-}
+};
 
-const args = [ ...config, ...runInBand, ...getArgsFromCLI( cleanUpPrefixes ) ];
-runTests( args ).catch( ( error ) => {
-	console.error( error );
-	process.exit( 1 );
-} );
+runTests();
