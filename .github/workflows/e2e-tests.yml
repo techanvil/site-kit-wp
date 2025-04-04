@@ -240,19 +240,21 @@ jobs:
               env:
                   RETRY_TEST_NAME: ${{ github.event.inputs.retry_test_name }}
               run: |
-                  while [ "${ATTEMPT}" -le "${{ github.event.inputs.max_retries || 1000 }}" ]; do
-                      echo "Attempt ${ATTEMPT} of ${{ github.event.inputs.max_retries || 1000 }}"
-                      if ! NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e -w "./tests/e2e"; then
+                  current_attempt="${ATTEMPT}"
+                  while [ "${current_attempt}" -le "${{ github.event.inputs.max_retries || 1000 }}" ]; do
+                      echo "Attempt ${current_attempt} of ${{ github.event.inputs.max_retries || 1000 }}"
+                      if ! CURRENT_ATTEMPT="${current_attempt}" NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e -w "./tests/e2e"; then
                           # Check if the specific test failed
                           if node "${{ github.workspace }}/tests/e2e/check-test-result.js"; then
-                              echo "Target test failed on attempt ${ATTEMPT}"
+                              echo "Target test failed on attempt ${current_attempt}"
                               exit 1
                           fi
                           echo "Other tests failed, continuing..."
                       else
-                          echo "All tests passed on attempt ${ATTEMPT}, continuing..."
+                          echo "All tests passed on attempt ${current_attempt}, continuing..."
                       fi
-                      echo "ATTEMPT=$(( ATTEMPT + 1 ))" >> "$GITHUB_ENV"
+                      current_attempt=$(( current_attempt + 1 ))
+                      npm run env:reset-site
                       sleep 1
                   done
                   echo "Reached maximum number of retries (${{ github.event.inputs.max_retries || 1000 }}) without test failure"

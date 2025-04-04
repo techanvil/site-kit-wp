@@ -371,7 +371,7 @@ describe( 'Analytics write scope requests', () => {
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics web data stream creation if the user has not granted the Analytics edit scope', async () => {
-		if ( process.env.ATTEMPT === '2' ) {
+		if ( process.env.CURRENT_ATTEMPT === '2' ) {
 			throw new Error( 'Test failed (attempt 2)' );
 		}
 
