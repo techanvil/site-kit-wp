@@ -48,43 +48,43 @@ on:
             - '!packages/**/__tests__/**/*.js'
             - '!packages/**/test/*.js'
             - '!packages/**/*.test.js'
-    pull_request:
-        branches:
-            - develop
-            - main
-            - 'feature/**'
-        # Ignore Storybook-only and unit-test-only changes when checking to run
-        # E2E tests. This is useful when adding/modifying/refactoring/removing
-        # test code ONLY in a commit, but saves running the expensive E2E test
-        # suite on GitHub Actions when all that's changing are tests and not code
-        # that would affect E2E behavior.
-        paths:
-            - '.github/workflows/e2e-tests.yml'
-            - '.babelrc'
-            - 'assets/**'
-            - 'includes/**'
-            - '/*.php'
-            - 'jest-puppeteer.config.js'
-            - 'composer.json'
-            - 'composer.lock'
-            - '/php-scoper/composer.lock'
-            - 'package.json'
-            - 'package-lock.json'
-            - 'postcss.config.js'
-            - 'webpack/*.config.js'
-            - 'webpack.config.js'
-            - 'tests/e2e/**'
-            - '!assets/**/__tests__/**/*.js'
-            - '!assets/**/test/*.js'
-            - '!assets/**/*.test.js'
-            - '!packages/**/__tests__/**/*.js'
-            - '!packages/**/test/*.js'
-            - '!packages/**/*.test.js'
-        types:
-            - opened
-            - reopened
-            - synchronize
-            - ready_for_review
+    # pull_request:
+    #     branches:
+    #         - develop
+    #         - main
+    #         - 'feature/**'
+    #     # Ignore Storybook-only and unit-test-only changes when checking to run
+    #     # E2E tests. This is useful when adding/modifying/refactoring/removing
+    #     # test code ONLY in a commit, but saves running the expensive E2E test
+    #     # suite on GitHub Actions when all that's changing are tests and not code
+    #     # that would affect E2E behavior.
+    #     paths:
+    #         - '.github/workflows/e2e-tests.yml'
+    #         - '.babelrc'
+    #         - 'assets/**'
+    #         - 'includes/**'
+    #         - '/*.php'
+    #         - 'jest-puppeteer.config.js'
+    #         - 'composer.json'
+    #         - 'composer.lock'
+    #         - '/php-scoper/composer.lock'
+    #         - 'package.json'
+    #         - 'package-lock.json'
+    #         - 'postcss.config.js'
+    #         - 'webpack/*.config.js'
+    #         - 'webpack.config.js'
+    #         - 'tests/e2e/**'
+    #         - '!assets/**/__tests__/**/*.js'
+    #         - '!assets/**/test/*.js'
+    #         - '!assets/**/*.test.js'
+    #         - '!packages/**/__tests__/**/*.js'
+    #         - '!packages/**/test/*.js'
+    #         - '!packages/**/*.test.js'
+    #     types:
+    #         - opened
+    #         - reopened
+    #         - synchronize
+    #         - ready_for_review
 
 concurrency:
     group: e2e-tests-${{ github.ref }}
@@ -95,7 +95,10 @@ jobs:
         name: E2E (WordPress latest)
         runs-on: ubuntu-latest
         timeout-minutes: 60
-        if: github.event_name == 'push' || github.event.pull_request.draft == false
+        if: >
+            github.event_name == 'workflow_dispatch' ||
+            github.event_name == 'push'
+        # || (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
         env:
             AMP_VERSION: ''
             WP_VERSION: 'latest'
