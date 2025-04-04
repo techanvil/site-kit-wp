@@ -18,17 +18,17 @@ on:
                 type: boolean
                 default: false
             debug_redux:
-                description: 'Enable Redux debug logging'
+                description: 'Enable Redux debug logging for the target test'
                 required: false
                 type: boolean
                 default: false
             debug_nav:
-                description: 'Enable navigation debug logging'
+                description: 'Enable navigation debug logging for the target test'
                 required: false
                 type: boolean
                 default: true
             debug_rest:
-                description: 'Enable REST API debug logging'
+                description: 'Enable REST API debug logging for the target test'
                 required: false
                 type: boolean
                 default: true
