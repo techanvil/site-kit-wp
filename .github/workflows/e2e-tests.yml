@@ -197,29 +197,29 @@ jobs:
               id: composer-cache
               run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
-            - name: Restore composer cache
-              uses: actions/cache@v4
-              id: composer-cache-step
-              with:
-                  path: |
-                      ${{ steps.composer-cache.outputs.dir }}
-                      vendor
-                      third-party
-                  key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+            # - name: Restore composer cache
+            #   uses: actions/cache@v4
+            #   id: composer-cache-step
+            #   with:
+            #       path: |
+            #           ${{ steps.composer-cache.outputs.dir }}
+            #           vendor
+            #           third-party
+            #       key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
 
             - name: Composer Install
-              if: steps.composer-cache-step.outputs.cache-hit != 'true'
+              #   if: steps.composer-cache-step.outputs.cache-hit != 'true'
               run: composer install --no-interaction --no-progress --no-dev
 
-            - name: Save composer cache
-              if: steps.composer-cache-step.outputs.cache-hit != 'true'
-              uses: actions/cache/save@v4
-              with:
-                  path: |
-                      ${{ steps.composer-cache.outputs.dir }}
-                      vendor
-                      third-party
-                  key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+            # - name: Save composer cache
+            #   if: steps.composer-cache-step.outputs.cache-hit != 'true'
+            #   uses: actions/cache/save@v4
+            #   with:
+            #       path: |
+            #           ${{ steps.composer-cache.outputs.dir }}
+            #           vendor
+            #           third-party
+            #       key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
 
             - name: Start environment
               run: npm run env:start
