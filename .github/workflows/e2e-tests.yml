@@ -113,6 +113,7 @@ jobs:
                   node-version-file: '.nvmrc'
                   cache: 'npm'
 
+            # TODO: Fix and restore global npm cache.
             # - name: Restore global npm cache
             #   uses: actions/cache@v4
             #   id: global-npm-cache
@@ -200,6 +201,7 @@ jobs:
               id: composer-cache
               run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
+            # TODO: Fix and restore composer cache.
             # - name: Restore composer cache
             #   uses: actions/cache@v4
             #   id: composer-cache-step
