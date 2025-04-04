@@ -137,7 +137,8 @@ function removePageEvents() {
  * @return {boolean} Whether logging should occur.
  */
 function shouldLog() {
-	const targetTest = process.env.RETRY_TEST_NAME;
+	const targetTest = process.env.RETRY_FULL_TEST_NAME;
+	// `currentTestName` is the full test name (including describe names)
 	const currentTest = expect.getState().currentTestName;
 
 	// Log if we're not targeting a specific test, or if we're in the target test

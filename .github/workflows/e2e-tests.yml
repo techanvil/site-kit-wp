@@ -3,8 +3,8 @@ name: E2E Tests
 on:
     workflow_dispatch:
         inputs:
-            retry_test_name:
-                description: 'Test name to retry until failure (optional)'
+            retry_full_test_name:
+                description: 'Full test name (including describe names) to retry until failure (optional)'
                 required: false
                 type: string
             max_retries:
@@ -238,7 +238,7 @@ jobs:
             - name: Run the tests (retry mode)
               if: github.event.inputs.retry_until_failure == 'true'
               env:
-                  RETRY_TEST_NAME: ${{ github.event.inputs.retry_test_name }}
+                  RETRY_FULL_TEST_NAME: ${{ github.event.inputs.retry_full_test_name }}
               run: |
                   current_attempt="${ATTEMPT}"
                   while [ "${current_attempt}" -le "${{ github.event.inputs.max_retries || 1000 }}" ]; do

@@ -7,7 +7,7 @@
  * It reads the test-results.json file and looks for a test matching the given name.
  *
  * Usage:
- *   RETRY_TEST_NAME="test name" node check-test-result.js
+ *   RETRY_FULL_TEST_NAME="Full test name (including describe names)" node check-test-result.js
  *
  * Exit codes:
  *   0 - Test was found and failed.
@@ -18,10 +18,10 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 
-const testName = process.env.RETRY_TEST_NAME;
+const testName = process.env.RETRY_FULL_TEST_NAME;
 if ( ! testName ) {
 	process.stdout.write(
-		'Error: RETRY_TEST_NAME environment variable is required\n'
+		'Error: RETRY_FULL_TEST_NAME environment variable is required\n'
 	);
 	process.exit( 2 );
 }
@@ -43,8 +43,7 @@ try {
 	const results = JSON.parse( fs.readFileSync( resultsPath, 'utf8' ) );
 	const failed = results.testResults.some( ( file ) =>
 		file.assertionResults.some(
-			( test ) =>
-				test.title.includes( testName ) && test.status === 'failed'
+			( test ) => test.fullName === testName && test.status === 'failed'
 		)
 	);
 

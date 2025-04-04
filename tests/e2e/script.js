@@ -94,7 +94,7 @@ Object.entries( configsMapping ).forEach( ( [ envKey, argName ] ) => {
 const cleanUpPrefixes = [ '--puppeteer-', '--wordpress-' ];
 
 // Get the test name to check from environment variable
-const testToCheck = process.env.RETRY_TEST_NAME;
+const testToCheck = process.env.RETRY_FULL_TEST_NAME;
 
 // Create a dedicated directory for test results at repo root
 const repoRoot = path.resolve( __dirname, '../../' );
@@ -142,14 +142,14 @@ const runTests = async () => {
 
 				// Find the specific test result
 				const testResult = testResults.testResults.find( ( testFile ) =>
-					testFile.assertionResults.some( ( test ) =>
-						test.title.includes( testToCheck )
+					testFile.assertionResults.some(
+						( test ) => test.fullName === testToCheck
 					)
 				);
 
 				if ( testResult ) {
 					const specificTest = testResult.assertionResults.find(
-						( test ) => test.title.includes( testToCheck )
+						( test ) => test.fullName === testToCheck
 					);
 
 					if ( specificTest ) {
