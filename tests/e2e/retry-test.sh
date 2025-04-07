@@ -8,14 +8,14 @@ CURRENT_ATTEMPT="${ATTEMPT:-1}"
 MAX_RETRIES="${MAX_RETRIES:-1000}"
 WORKSPACE_DIR="${GITHUB_WORKSPACE}"
 
-# Debug flags
+# Build debug flags string based on environment variables
 DEBUG_FLAGS=""
 [ "${DEBUG_REDUX}" = "1" ] && DEBUG_FLAGS="${DEBUG_FLAGS} DEBUG_REDUX=1"
 [ "${DEBUG_NAV}" = "1" ] && DEBUG_FLAGS="${DEBUG_FLAGS} DEBUG_NAV=1"
 [ "${DEBUG_REST}" = "1" ] && DEBUG_FLAGS="${DEBUG_FLAGS} DEBUG_REST=1"
 
 while [ "${CURRENT_ATTEMPT}" -le "${MAX_RETRIES}" ]; do
-    echo "Attempt ${CURRENT_ATTEMPT} of ${MAX_RETRIES} (output will only be shown if the target test fails)..."
+    echo "TEST: Running attempt ${CURRENT_ATTEMPT} of ${MAX_RETRIES} (output will only be shown if the target test fails)..."
     
     # Run tests and capture output with timestamps
     if ! CURRENT_ATTEMPT="${CURRENT_ATTEMPT}" \
@@ -27,25 +27,29 @@ while [ "${CURRENT_ATTEMPT}" -le "${MAX_RETRIES}" ]; do
         
         # Check if the specific test failed
         if node "${WORKSPACE_DIR}/tests/e2e/check-test-result.js"; then
-            echo "Target test failed on attempt ${CURRENT_ATTEMPT}"
-            echo "Test output:"
+            echo "ERROR: Target test failed on attempt ${CURRENT_ATTEMPT}"
+            echo "OUTPUT:"
             cat test-output.log
             exit 1
         fi
-        echo "Other tests failed, continuing..."
+        echo "TEST: Other tests failed, continuing..."
     else
-        echo "All tests passed on attempt ${CURRENT_ATTEMPT}, continuing..."
+        echo "TEST: All tests passed on attempt ${CURRENT_ATTEMPT}, continuing..."
     fi
     
     CURRENT_ATTEMPT=$(( CURRENT_ATTEMPT + 1 ))
-    echo "Resetting site..."
+    
+    # Reset the site for the next attempt
+    echo "RESET: Resetting site..."
     if ! npm run env:reset-site > reset-output.log 2>&1; then
-        echo "Error resetting site:"
+        echo "ERROR: Failed to reset site:"
         cat reset-output.log
         exit 1
     fi
+    
+    # Brief pause between attempts
     sleep 1
 done
 
-echo "Reached maximum number of retries (${MAX_RETRIES}) without test failure"
+echo "TEST: Reached maximum number of attempts (${MAX_RETRIES}) without test failure"
 exit 0 
