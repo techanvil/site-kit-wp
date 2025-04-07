@@ -254,44 +254,11 @@ jobs:
               if: github.event.inputs.retry_until_failure == 'true'
               env:
                   RETRY_FULL_TEST_NAME: ${{ github.event.inputs.retry_full_test_name }}
-              run: |
-                  current_attempt="${ATTEMPT}"
-                  while [ "${current_attempt}" -le "${{ github.event.inputs.max_retries || 1000 }}" ]; do
-                      echo "Attempt ${current_attempt} of ${{ github.event.inputs.max_retries || 1000 }} (output will only be shown if the target test fails)..."
-                      
-                      # Run tests and capture output with timestamps
-                      if ! CURRENT_ATTEMPT="${current_attempt}" \
-                          ${{ github.event.inputs.debug_redux == true && 'DEBUG_REDUX=1' || '' }} \
-                          ${{ github.event.inputs.debug_nav != false && 'DEBUG_NAV=1' || '' }} \
-                          ${{ github.event.inputs.debug_rest != false && 'DEBUG_REST=1' || '' }} \
-                          npm run test:e2e 2>&1 | \
-                          while IFS= read -r line; do \
-                              echo "[$(date '+%Y-%m-%d %H:%M:%S.%N' | cut -b1-23)] $line"; \
-                          done > test-output.log; then
-                          
-                          # Check if the specific test failed
-                          if node "${{ github.workspace }}/tests/e2e/check-test-result.js"; then
-                              echo "Target test failed on attempt ${current_attempt}"
-                              echo "Test output:"
-                              cat test-output.log
-                              exit 1
-                          fi
-                          echo "Other tests failed, continuing..."
-                      else
-                          echo "All tests passed on attempt ${current_attempt}, continuing..."
-                      fi
-                      
-                      current_attempt=$(( current_attempt + 1 ))
-                      echo "Resetting site..."
-                      if ! npm run env:reset-site > reset-output.log 2>&1; then
-                          echo "Error resetting site:"
-                          cat reset-output.log
-                          exit 1
-                      fi
-                      sleep 1
-                  done
-                  echo "Reached maximum number of retries (${{ github.event.inputs.max_retries || 1000 }}) without test failure"
-                  exit 0
+                  MAX_RETRIES: ${{ github.event.inputs.max_retries || 1000 }}
+                  DEBUG_REDUX: ${{ github.event.inputs.debug_redux == true && '1' || '' }}
+                  DEBUG_NAV: ${{ github.event.inputs.debug_nav == true && '1' || '' }}
+                  DEBUG_REST: ${{ github.event.inputs.debug_rest == true && '1' || '' }}
+              run: ./retry-test.sh
               working-directory: tests/e2e
 
             - name: Run the tests (normal mode)
