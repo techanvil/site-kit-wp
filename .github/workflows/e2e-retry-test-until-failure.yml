@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
         inputs:
             retry_full_test_name:
-                description: 'Full test name (including describe names) to retry until failure (optional)'
+                description: 'Full test name (including describe names) to retry until failure'
                 required: true
                 type: string
             max_retries:
