@@ -44,16 +44,19 @@ while [ "${CURRENT_ATTEMPT}" -le "${MAX_RETRIES}" ]; do
     
     export CURRENT_ATTEMPT=$(( CURRENT_ATTEMPT + 1 ))
     
-    # Reset the site for the next attempt
-    echo "RESET: Resetting site..."
-    if ! npm run env:reset-site > reset-output.log 2>&1; then
-        echo "ERROR: Failed to reset site:"
-        cat reset-output.log
-        exit 1
+    # Skip site reset on the last iteration
+    if [ "${CURRENT_ATTEMPT}" -le "${MAX_RETRIES}" ]; then
+        # Reset the site for the next attempt
+        echo "RESET: Resetting site..."
+        if ! npm run env:reset-site > reset-output.log 2>&1; then
+            echo "ERROR: Failed to reset site:"
+            cat reset-output.log
+            exit 1
+        fi
+        
+        # Brief pause between attempts
+        sleep 1
     fi
-    
-    # Brief pause between attempts
-    sleep 1
 done
 
 echo "TEST: Reached maximum number of attempts (${MAX_RETRIES}) without test failure"
