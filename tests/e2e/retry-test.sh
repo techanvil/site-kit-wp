@@ -4,15 +4,19 @@
 set -e
 
 # Initialize variables from environment or use defaults
-CURRENT_ATTEMPT="${ATTEMPT:-1}"
 MAX_RETRIES="${MAX_RETRIES:-1000}"
 WORKSPACE_DIR="${GITHUB_WORKSPACE}"
+CURRENT_ATTEMPT=1
 
 # Build debug flags string based on environment variables
 DEBUG_FLAGS=""
 [ "${DEBUG_REDUX}" = "1" ] && DEBUG_FLAGS="${DEBUG_FLAGS} DEBUG_REDUX=1"
 [ "${DEBUG_NAV}" = "1" ] && DEBUG_FLAGS="${DEBUG_FLAGS} DEBUG_NAV=1"
 [ "${DEBUG_REST}" = "1" ] && DEBUG_FLAGS="${DEBUG_FLAGS} DEBUG_REST=1"
+
+echo "RETRY_FULL_TEST_NAME: ${RETRY_FULL_TEST_NAME}"
+echo "MAX_RETRIES: ${MAX_RETRIES}"
+echo "DEBUG_FLAGS: ${DEBUG_FLAGS}"
 
 while [ "${CURRENT_ATTEMPT}" -le "${MAX_RETRIES}" ]; do
     echo "TEST: Running attempt ${CURRENT_ATTEMPT} of ${MAX_RETRIES} (output will only be shown if the target test fails)..."

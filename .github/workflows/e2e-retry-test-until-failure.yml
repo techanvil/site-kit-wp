@@ -48,7 +48,6 @@ jobs:
             AMP_VERSION: ''
             WP_VERSION: 'latest'
             CA_CERT_REFRESH: ''
-            ATTEMPT: 1
         steps:
             - uses: actions/checkout@v4
 
