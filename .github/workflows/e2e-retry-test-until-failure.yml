@@ -51,6 +51,16 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
+            - name: Log workflow inputs
+              run: |
+                  echo "Workflow inputs:"
+                  echo "  retry_full_test_name: ${{ github.event.inputs.retry_full_test_name }}"
+                  echo "  timeout_minutes: ${{ github.event.inputs.timeout_minutes || 120 }}"
+                  echo "  max_retries: ${{ github.event.inputs.max_retries || 1000 }}"
+                  echo "  debug_redux: ${{ github.event.inputs.debug_redux }}"
+                  echo "  debug_nav: ${{ github.event.inputs.debug_nav }}"
+                  echo "  debug_rest: ${{ github.event.inputs.debug_rest }}"
+
             - name: Setup Node.js (.nvmrc)
               uses: actions/setup-node@v4
               with:
