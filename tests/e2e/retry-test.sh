@@ -14,6 +14,13 @@ echo "VAR: MAX_RETRIES: ${MAX_RETRIES}"
 echo "VAR: DEBUG_REDUX: ${DEBUG_REDUX}"
 echo "VAR: DEBUG_NAV: ${DEBUG_NAV}"
 echo "VAR: DEBUG_REST: ${DEBUG_REST}"
+echo "VAR: DEBUG_TEST_RUNNER_LOGGING: ${DEBUG_TEST_RUNNER_LOGGING}"
+
+function debug_log() {
+  if [[ "${DEBUG_TEST_RUNNER_LOGGING}" == "1" ]]; then
+    echo "DEBUG: $1"
+  fi
+}
 
 while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
     echo "VAR: CURRENT_ATTEMPT: ${CURRENT_ATTEMPT}"
@@ -21,7 +28,9 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
 
     output_file="${WORKSPACE_DIR}/e2e-test-results/test-output-${CURRENT_ATTEMPT}.log"
     mkdir -p "${WORKSPACE_DIR}/e2e-test-results"
-    
+
+    debug_log "Running tests and capturing output to ${output_file}"
+
     # Run tests and capture output with timestamps
     set +e  # Temporarily disable exit on error since we want to handle test failures
     npm run test:e2e 2>&1 | while IFS= read -r line; do \
@@ -29,6 +38,8 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
     done > "${output_file}"
     declare -i TEST_EXIT_STATUS=${PIPESTATUS[0]}
     set -e  # Re-enable exit on error
+
+    debug_log "Tests completed with exit status ${TEST_EXIT_STATUS}"
     
     if (( TEST_EXIT_STATUS != 0 )); then
         # Check if the specific test failed
@@ -42,8 +53,12 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
     else
         echo "TEST: All tests passed on attempt ${CURRENT_ATTEMPT}, continuing..."
     fi
+
+    debug_log "Incrementing CURRENT_ATTEMPT from ${CURRENT_ATTEMPT}"
     
     export CURRENT_ATTEMPT=$(( CURRENT_ATTEMPT + 1 ))
+
+    debug_log "Incremented CURRENT_ATTEMPT to ${CURRENT_ATTEMPT}"
     
     # Skip site reset on the last iteration
     if (( CURRENT_ATTEMPT <= MAX_RETRIES )); then
@@ -54,10 +69,14 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
             cat reset-output.log
             exit 1
         fi
+
+        debug_log "Site reset completed"
         
         # Brief pause between attempts
         sleep 1
     fi
+
+    debug_log "Completed iteration ${CURRENT_ATTEMPT} of ${MAX_RETRIES}"
 done
 
 echo "TEST: Reached maximum number of attempts (${MAX_RETRIES}) without test failure"
