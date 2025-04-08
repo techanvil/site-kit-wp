@@ -14,11 +14,12 @@ DEBUG_FLAGS=""
 [ "${DEBUG_NAV}" = "1" ] && DEBUG_FLAGS="${DEBUG_FLAGS} DEBUG_NAV=1"
 [ "${DEBUG_REST}" = "1" ] && DEBUG_FLAGS="${DEBUG_FLAGS} DEBUG_REST=1"
 
-echo "RETRY_FULL_TEST_NAME: ${RETRY_FULL_TEST_NAME}"
-echo "MAX_RETRIES: ${MAX_RETRIES}"
-echo "DEBUG_FLAGS: ${DEBUG_FLAGS}"
+echo "VAR: RETRY_FULL_TEST_NAME: ${RETRY_FULL_TEST_NAME}, MAX_RETRIES: ${MAX_RETRIES}, DEBUG_FLAGS: ${DEBUG_FLAGS}"
+echo "VAR: MAX_RETRIES: ${MAX_RETRIES}"
+echo "VAR: DEBUG_FLAGS: ${DEBUG_FLAGS}"
 
 while [ "${CURRENT_ATTEMPT}" -le "${MAX_RETRIES}" ]; do
+    echo "VAR: CURRENT_ATTEMPT: ${CURRENT_ATTEMPT}"
     echo "TEST: Running attempt ${CURRENT_ATTEMPT} of ${MAX_RETRIES} (output will only be shown if the target test fails)..."
     
     # Run tests and capture output with timestamps
