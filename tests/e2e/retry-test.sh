@@ -7,13 +7,7 @@ set -o pipefail
 # Initialize variables from environment or use defaults
 MAX_RETRIES="${MAX_RETRIES:-1000}"
 WORKSPACE_DIR="${GITHUB_WORKSPACE}"
-# Export CURRENT_ATTEMPT for child processes
 export CURRENT_ATTEMPT=1
-
-# Export debug flags for child processes
-# export DEBUG_REDUX
-# export DEBUG_NAV
-# export DEBUG_REST
 
 echo "VAR: RETRY_FULL_TEST_NAME: ${RETRY_FULL_TEST_NAME}"
 echo "VAR: MAX_RETRIES: ${MAX_RETRIES}"
@@ -46,9 +40,7 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
         echo "TEST: All tests passed on attempt ${CURRENT_ATTEMPT}, continuing..."
     fi
     
-    echo "DEBUG: About to increment CURRENT_ATTEMPT from ${CURRENT_ATTEMPT}"
     export CURRENT_ATTEMPT=$(( CURRENT_ATTEMPT + 1 ))
-    echo "DEBUG: Incremented CURRENT_ATTEMPT to ${CURRENT_ATTEMPT}"
     
     # Skip site reset on the last iteration
     if (( CURRENT_ATTEMPT <= MAX_RETRIES )); then
