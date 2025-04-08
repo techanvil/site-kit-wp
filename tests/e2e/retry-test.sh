@@ -18,12 +18,15 @@ echo "VAR: DEBUG_REST: ${DEBUG_REST}"
 while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
     echo "VAR: CURRENT_ATTEMPT: ${CURRENT_ATTEMPT}"
     echo "TEST: Running attempt ${CURRENT_ATTEMPT} of ${MAX_RETRIES} (output will only be shown if the target test fails)..."
+
+    output_file="${WORKSPACE_DIR}/e2e-test-results/test-output-${CURRENT_ATTEMPT}.log"
+    mkdir -p "${WORKSPACE_DIR}/e2e-test-results"
     
     # Run tests and capture output with timestamps
     set +e  # Temporarily disable exit on error since we want to handle test failures
     npm run test:e2e 2>&1 | while IFS= read -r line; do \
         echo "[$(date '+%Y-%m-%d %H:%M:%S.%N' | cut -b1-23)] $line"; \
-    done > test-output.log
+    done > "${output_file}"
     declare -i TEST_EXIT_STATUS=${PIPESTATUS[0]}
     set -e  # Re-enable exit on error
     
@@ -32,7 +35,7 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
         if node "${WORKSPACE_DIR}/tests/e2e/check-test-result.js"; then
             echo "ERROR: Target test failed on attempt ${CURRENT_ATTEMPT}"
             echo "OUTPUT:"
-            cat test-output.log
+            cat "${output_file}"
             exit 1
         fi
         echo "TEST: Other tests failed, continuing..."
