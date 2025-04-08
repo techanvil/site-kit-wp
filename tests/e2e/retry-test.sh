@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Exit on error
+# Exit on error and propagate pipeline failures
 set -e
+set -o pipefail
 
 # Initialize variables from environment or use defaults
 MAX_RETRIES="${MAX_RETRIES:-1000}"
