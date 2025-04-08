@@ -12,16 +12,6 @@
 process.env.BABEL_ENV = 'test';
 process.env.NODE_ENV = 'test';
 
-// Log debug flags to verify they are being received correctly
-process.stdout.write( 'VARS in script.js:\n' );
-process.stdout.write(
-	`RETRY_FULL_TEST_NAME: ${ process.env.RETRY_FULL_TEST_NAME }\n`
-);
-process.stdout.write( `DEBUG_REDUX: ${ process.env.DEBUG_REDUX }\n` );
-process.stdout.write( `DEBUG_NAV: ${ process.env.DEBUG_NAV }\n` );
-process.stdout.write( `DEBUG_REST: ${ process.env.DEBUG_REST }\n` );
-process.stdout.write( `CURRENT_ATTEMPT: ${ process.env.CURRENT_ATTEMPT }\n` );
-
 // Makes the script crash on unhandled rejections instead of silently
 // ignoring them. In the future, promise rejections that are not handled will
 // terminate the Node.js process with a non-zero exit code.
