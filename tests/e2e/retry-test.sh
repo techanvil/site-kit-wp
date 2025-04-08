@@ -21,7 +21,7 @@ echo "VAR: DEBUG_REDUX: ${DEBUG_REDUX}"
 echo "VAR: DEBUG_NAV: ${DEBUG_NAV}"
 echo "VAR: DEBUG_REST: ${DEBUG_REST}"
 
-while [ "${CURRENT_ATTEMPT}" -le "${MAX_RETRIES}" ]; do
+while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
     echo "VAR: CURRENT_ATTEMPT: ${CURRENT_ATTEMPT}"
     echo "TEST: Running attempt ${CURRENT_ATTEMPT} of ${MAX_RETRIES} (output will only be shown if the target test fails)..."
     
