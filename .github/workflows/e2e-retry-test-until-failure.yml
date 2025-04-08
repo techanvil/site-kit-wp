@@ -193,9 +193,9 @@ jobs:
               env:
                   RETRY_FULL_TEST_NAME: ${{ github.event.inputs.retry_full_test_name }}
                   MAX_RETRIES: ${{ github.event.inputs.max_retries || 1000 }}
-                  DEBUG_REDUX: ${{ github.event.inputs.debug_redux == true && '1' || '' }}
-                  DEBUG_NAV: ${{ github.event.inputs.debug_nav == true && '1' || '' }}
-                  DEBUG_REST: ${{ github.event.inputs.debug_rest == true && '1' || '' }}
+                  DEBUG_REDUX: ${{ github.event.inputs.debug_redux == 'true' && '1' || '' }}
+                  DEBUG_NAV: ${{ github.event.inputs.debug_nav == 'true' && '1' || '' }}
+                  DEBUG_REST: ${{ github.event.inputs.debug_rest == 'true' && '1' || '' }}
               run: ./retry-test.sh
               working-directory: tests/e2e
 

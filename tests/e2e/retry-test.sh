@@ -6,7 +6,13 @@ set -e
 # Initialize variables from environment or use defaults
 MAX_RETRIES="${MAX_RETRIES:-1000}"
 WORKSPACE_DIR="${GITHUB_WORKSPACE}"
-CURRENT_ATTEMPT=1
+# Export CURRENT_ATTEMPT for child processes
+export CURRENT_ATTEMPT=1
+
+# Export debug flags for child processes
+# export DEBUG_REDUX
+# export DEBUG_NAV
+# export DEBUG_REST
 
 echo "VAR: RETRY_FULL_TEST_NAME: ${RETRY_FULL_TEST_NAME}"
 echo "VAR: MAX_RETRIES: ${MAX_RETRIES}"
