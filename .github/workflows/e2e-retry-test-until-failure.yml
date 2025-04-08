@@ -41,7 +41,8 @@ jobs:
     e2e-tests:
         name: E2E (WordPress latest)
         runs-on: ubuntu-latest
-        timeout-minutes: ${{ github.event.inputs.timeout_minutes || 120 }}
+        # Ensure the timeout is a number.
+        timeout-minutes: ${{ fromJSON(github.event.inputs.timeout_minutes || 120) }}
         if: github.event_name == 'workflow_dispatch'
         env:
             AMP_VERSION: ''
