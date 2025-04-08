@@ -26,11 +26,12 @@ while [ "${CURRENT_ATTEMPT}" -le "${MAX_RETRIES}" ]; do
     echo "TEST: Running attempt ${CURRENT_ATTEMPT} of ${MAX_RETRIES} (output will only be shown if the target test fails)..."
     
     # Run tests and capture output with timestamps
-    if ! npm run test:e2e 2>&1 | \
-        while IFS= read -r line; do \
-            echo "[$(date '+%Y-%m-%d %H:%M:%S.%N' | cut -b1-23)] $line"; \
-        done > test-output.log; then
-        
+    npm run test:e2e 2>&1 | while IFS= read -r line; do \
+        echo "[$(date '+%Y-%m-%d %H:%M:%S.%N' | cut -b1-23)] $line"; \
+    done > test-output.log
+    TEST_EXIT_STATUS=${PIPESTATUS[0]}
+    
+    if [ $TEST_EXIT_STATUS -ne 0 ]; then
         # Check if the specific test failed
         if node "${WORKSPACE_DIR}/tests/e2e/check-test-result.js"; then
             echo "ERROR: Target test failed on attempt ${CURRENT_ATTEMPT}"
@@ -43,10 +44,12 @@ while [ "${CURRENT_ATTEMPT}" -le "${MAX_RETRIES}" ]; do
         echo "TEST: All tests passed on attempt ${CURRENT_ATTEMPT}, continuing..."
     fi
     
+    echo "DEBUG: About to increment CURRENT_ATTEMPT from ${CURRENT_ATTEMPT}"
     export CURRENT_ATTEMPT=$(( CURRENT_ATTEMPT + 1 ))
+    echo "DEBUG: Incremented CURRENT_ATTEMPT to ${CURRENT_ATTEMPT}"
     
     # Skip site reset on the last iteration
-    if [ "${CURRENT_ATTEMPT}" -le "${MAX_RETRIES}" ]; then
+    if (( CURRENT_ATTEMPT <= MAX_RETRIES )); then
         # Reset the site for the next attempt
         echo "RESET: Resetting site..."
         if ! npm run env:reset-site > reset-output.log 2>&1; then
