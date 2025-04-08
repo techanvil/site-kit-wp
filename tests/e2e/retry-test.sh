@@ -27,13 +27,13 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
     
     # Run tests and capture output with timestamps
     set +e  # Temporarily disable exit on error since we want to handle test failures
-    npm run test:e2e 2>&1 | while IFS= read -r line; do \
+    npm run test:e2e specs/modules/analytics/write-scope-requests.test.js 2>&1 | while IFS= read -r line; do \
         echo "[$(date '+%Y-%m-%d %H:%M:%S.%N' | cut -b1-23)] $line"; \
     done > test-output.log
-    TEST_EXIT_STATUS=${PIPESTATUS[0]}
+    declare -i TEST_EXIT_STATUS=${PIPESTATUS[0]}
     set -e  # Re-enable exit on error
     
-    if [ $TEST_EXIT_STATUS -ne 0 ]; then
+    if (( TEST_EXIT_STATUS != 0 )); then
         # Check if the specific test failed
         if node "${WORKSPACE_DIR}/tests/e2e/check-test-result.js"; then
             echo "ERROR: Target test failed on attempt ${CURRENT_ATTEMPT}"
