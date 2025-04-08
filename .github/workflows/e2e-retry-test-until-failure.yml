@@ -1,5 +1,5 @@
 name: E2E Test Retry Until Failure
-run-name: 'E2E Test Retry Until Failure #${{ github.run_number }} 🔄 ${{ github.event.inputs.retry_full_test_name }} (${{ github.run_attempt }})'
+run-name: '${{ github.event.inputs.run_label }} #${{ github.run_number }} 🔄 ${{ github.event.inputs.retry_full_test_name }} (${{ github.run_attempt }})'
 
 on:
     workflow_dispatch:
@@ -8,6 +8,11 @@ on:
                 description: 'Full test name (including describe names) to retry until failure'
                 required: true
                 type: string
+            run_label:
+                description: 'Run label (default: "E2E Test Retry Until Failure")'
+                required: false
+                type: string
+                default: 'E2E Test Retry Until Failure'
             timeout_minutes:
                 description: 'Timeout in minutes (default: 120)'
                 required: false
