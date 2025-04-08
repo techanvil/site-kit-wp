@@ -1,5 +1,5 @@
 name: E2E Test Retry Until Failure
-run-name: '${{ github.event.inputs.run_label }} #${{ github.run_number }} 🔄 ${{ github.event.inputs.retry_full_test_name }} (${{ github.run_attempt }})'
+run-name: 'E2E Test Retry Until Failure #${{ github.run_number }} ${{ github.event.inputs.run_label }} 🔄 ${{ github.event.inputs.retry_full_test_name }} (${{ github.run_attempt }})'
 
 on:
     workflow_dispatch:
@@ -14,15 +14,15 @@ on:
                 type: string
                 default: 'E2E Test Retry Until Failure'
             timeout_minutes:
-                description: 'Timeout in minutes (default: 120)'
+                description: 'Timeout in minutes (default: 180)'
                 required: false
                 type: number
-                default: 120
+                default: 180
             max_retries:
-                description: 'Maximum number of retries (default: 1000)'
+                description: 'Maximum number of retries (default: 20)'
                 required: false
                 type: number
-                default: 1000
+                default: 20
             debug_redux:
                 description: 'Enable Redux debug logging for the target test'
                 required: false
@@ -44,7 +44,7 @@ jobs:
         name: E2E (WordPress latest)
         runs-on: ubuntu-latest
         # Ensure the timeout is a number.
-        timeout-minutes: ${{ fromJSON(github.event.inputs.timeout_minutes || 120) }}
+        timeout-minutes: ${{ fromJSON(github.event.inputs.timeout_minutes || 180) }}
         if: github.event_name == 'workflow_dispatch'
         env:
             AMP_VERSION: ''
@@ -57,8 +57,8 @@ jobs:
               run: |
                   echo "Workflow inputs:"
                   echo "  retry_full_test_name: ${{ github.event.inputs.retry_full_test_name }}"
-                  echo "  timeout_minutes: ${{ github.event.inputs.timeout_minutes || 120 }}"
-                  echo "  max_retries: ${{ github.event.inputs.max_retries || 1000 }}"
+                  echo "  timeout_minutes: ${{ github.event.inputs.timeout_minutes || 180 }}"
+                  echo "  max_retries: ${{ github.event.inputs.max_retries || 20 }}"
                   echo "  debug_redux: ${{ github.event.inputs.debug_redux }}"
                   echo "  debug_nav: ${{ github.event.inputs.debug_nav }}"
                   echo "  debug_rest: ${{ github.event.inputs.debug_rest }}"
@@ -194,7 +194,7 @@ jobs:
             - name: Run the tests until failure
               env:
                   RETRY_FULL_TEST_NAME: ${{ github.event.inputs.retry_full_test_name }}
-                  MAX_RETRIES: ${{ github.event.inputs.max_retries || 1000 }}
+                  MAX_RETRIES: ${{ github.event.inputs.max_retries || 20 }}
                   DEBUG_REDUX: ${{ github.event.inputs.debug_redux == 'true' && '1' || '' }}
                   DEBUG_NAV: ${{ github.event.inputs.debug_nav == 'true' && '1' || '' }}
                   DEBUG_REST: ${{ github.event.inputs.debug_rest == 'true' && '1' || '' }}
@@ -203,9 +203,8 @@ jobs:
 
             - name: Upload artifacts
               uses: actions/upload-artifact@v4
-              if: failure()
               with:
-                  name: e2e-debugging-run[${{ github.run_attempt }}]-wp[${{ env.WP_VERSION }}]-amp[${{ env.AMP_VERSION }}]
+                  name: e2e-debugging-run-${{ github.run_number }}-attempt-${{ github.run_attempt }}
                   path: |
                       ~/.npm/_logs/
                       tests/e2e/screenshots/

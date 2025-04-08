@@ -5,7 +5,7 @@ set -e
 set -o pipefail
 
 # Initialize variables from environment or use defaults
-MAX_RETRIES="${MAX_RETRIES:-1000}"
+MAX_RETRIES="${MAX_RETRIES}"
 WORKSPACE_DIR="${GITHUB_WORKSPACE}"
 export CURRENT_ATTEMPT=1
 
