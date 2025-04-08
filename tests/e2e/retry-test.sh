@@ -19,7 +19,8 @@ while [ "${CURRENT_ATTEMPT}" -le "${MAX_RETRIES}" ]; do
     echo "TEST: Running attempt ${CURRENT_ATTEMPT} of ${MAX_RETRIES} (output will only be shown if the target test fails)..."
     
     # Run tests and capture output with timestamps
-    if ! npm run test:e2e 2>&1 | \
+    if ! npm run test:e2e; then
+        # 2>&1 | \
         # while IFS= read -r line; do \
         #     echo "[$(date '+%Y-%m-%d %H:%M:%S.%N' | cut -b1-23)] $line"; \
         # done > test-output.log; then
