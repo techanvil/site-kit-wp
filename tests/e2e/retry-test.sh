@@ -26,10 +26,12 @@ while [ "${CURRENT_ATTEMPT}" -le "${MAX_RETRIES}" ]; do
     echo "TEST: Running attempt ${CURRENT_ATTEMPT} of ${MAX_RETRIES} (output will only be shown if the target test fails)..."
     
     # Run tests and capture output with timestamps
+    set +e  # Temporarily disable exit on error since we want to handle test failures
     npm run test:e2e 2>&1 | while IFS= read -r line; do \
         echo "[$(date '+%Y-%m-%d %H:%M:%S.%N' | cut -b1-23)] $line"; \
     done > test-output.log
     TEST_EXIT_STATUS=${PIPESTATUS[0]}
+    set -e  # Re-enable exit on error
     
     if [ $TEST_EXIT_STATUS -ne 0 ]; then
         # Check if the specific test failed
