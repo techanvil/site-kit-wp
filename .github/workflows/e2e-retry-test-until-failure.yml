@@ -123,7 +123,7 @@ jobs:
 
             - name: Get assets last commit
               id: assets-commit
-              run: echo "hash=$(git rev-list -1 HEAD -- ./assets)" >> "$GITHUB_OUTPUT"
+              run: echo "hash=$(git ls-tree HEAD ./assets | awk '{print $3}')" >> "$GITHUB_OUTPUT"
 
             - name: Restore build cache
               uses: actions/cache@v4
