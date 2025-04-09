@@ -39,8 +39,8 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
 
     # Run tests and capture output with timestamps
     set +e  # Temporarily disable exit on error since we want to handle test failures
-    # CURRENT_ATTEMPT="${CURRENT_ATTEMPT}" npm run test:e2e "${SPEC_FILE}" 2>&1 | while IFS= read -r line; do \
-    npm run test:e2e "${SPEC_FILE}" 2>&1 | while IFS= read -r line; do \
+    CURRENT_ATTEMPT="${CURRENT_ATTEMPT}" npm run test:e2e "${SPEC_FILE}" 2>&1 | while IFS= read -r line; do \
+    # npm run test:e2e "${SPEC_FILE}" 2>&1 | while IFS= read -r line; do \
         echo "[$(date '+%Y-%m-%d %H:%M:%S.%N' | cut -b1-23)] $line"; \
     done > "${output_file}"
     declare -i TEST_EXIT_STATUS=${PIPESTATUS[0]}
