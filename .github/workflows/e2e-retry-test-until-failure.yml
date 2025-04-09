@@ -1,5 +1,5 @@
 name: E2E Test Retry Until Failure
-run-name: 'E2E Test Retry Until Failure #${{ github.run_number }} ${{ github.event.inputs.run_label }} 🔄 ${{ github.event.inputs.retry_full_test_name }} (${{ github.run_attempt }})'
+run-name: '${{ github.event.inputs.run_label }} #${{ github.run_number }} 🔄 ${{ github.event.inputs.retry_full_test_name }} (${{ github.run_attempt }})'
 
 on:
     workflow_dispatch:
