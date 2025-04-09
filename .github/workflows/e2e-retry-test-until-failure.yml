@@ -206,7 +206,7 @@ jobs:
             # Using $GITHUB_ENV makes this variable available to all subsequent steps automatically
             - name: Set test results ID
               id: set-test-results-id
-              run: echo "TEST_RESULTS_ID=$(date -u +'%Y%m%d-%H%M%S')-run-${{ github.run_id }}-attempt-${{ github.run_attempt }}" >> $GITHUB_ENV
+              run: echo "TEST_RESULTS_ID_PREFIX=$(date -u +'%Y%m%d-%H%M%S')-run-${{ github.run_id }}-attempt-${{ github.run_attempt }}" >> $GITHUB_ENV
 
             - name: Run the tests until failure
               env:

@@ -18,6 +18,7 @@ echo "VAR: DEBUG_NAV: ${DEBUG_NAV}"
 echo "VAR: DEBUG_REST: ${DEBUG_REST}"
 echo "VAR: DEBUG_TEST_RUNNER_LOGGING: ${DEBUG_TEST_RUNNER_LOGGING}"
 echo "VAR: CURRENT_ATTEMPT: ${CURRENT_ATTEMPT}"
+echo "VAR: TEST_RESULTS_ID_PREFIX: ${TEST_RESULTS_ID_PREFIX}"
 
 function debug_log() {
   if [[ "${DEBUG_TEST_RUNNER_LOGGING}" == "1" ]]; then
@@ -26,7 +27,9 @@ function debug_log() {
 }
 
 while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
+    export TEST_RESULTS_ID="${TEST_RESULTS_ID_PREFIX}-${CURRENT_ATTEMPT}"
     echo "VAR: CURRENT_ATTEMPT: ${CURRENT_ATTEMPT}"
+    echo "VAR: TEST_RESULTS_ID: ${TEST_RESULTS_ID}"
     echo "TEST: Running attempt ${CURRENT_ATTEMPT} of ${MAX_RETRIES} (output will only be shown if the target test fails)..."
 
     output_file="${WORKSPACE_DIR}/e2e-test-results/test-output-${CURRENT_ATTEMPT}.log"
