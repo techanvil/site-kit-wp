@@ -8,6 +8,11 @@ on:
                 description: 'Full test name (including describe names) to retry until failure'
                 required: true
                 type: string
+            spec_file:
+                description: 'Spec file to retry until failure'
+                required: false
+                type: string
+                default: ''
             run_label:
                 description: 'Run label (default: "E2E Test Retry Until Failure")'
                 required: false
@@ -23,6 +28,11 @@ on:
                 required: false
                 type: number
                 default: 20
+            reset_site_between_runs:
+                description: 'Reset the site between runs'
+                required: false
+                type: boolean
+                default: true
             debug_redux:
                 description: 'Enable Redux debug logging for the target test'
                 required: false
@@ -62,8 +72,10 @@ jobs:
               run: |
                   echo "Workflow inputs:"
                   echo "  retry_full_test_name: ${{ github.event.inputs.retry_full_test_name }}"
+                  echo "  spec_file: ${{ github.event.inputs.spec_file }}"
                   echo "  timeout_minutes: ${{ github.event.inputs.timeout_minutes || 180 }}"
                   echo "  max_retries: ${{ github.event.inputs.max_retries || 20 }}"
+                  echo "  reset_site_between_runs: ${{ github.event.inputs.reset_site_between_runs }}"
                   echo "  debug_redux: ${{ github.event.inputs.debug_redux }}"
                   echo "  debug_nav: ${{ github.event.inputs.debug_nav }}"
                   echo "  debug_rest: ${{ github.event.inputs.debug_rest }}"
@@ -199,7 +211,9 @@ jobs:
             - name: Run the tests until failure
               env:
                   RETRY_FULL_TEST_NAME: ${{ github.event.inputs.retry_full_test_name }}
+                  SPEC_FILE: ${{ github.event.inputs.spec_file }}
                   MAX_RETRIES: ${{ github.event.inputs.max_retries || 20 }}
+                  RESET_SITE_BETWEEN_RUNS: ${{ github.event.inputs.reset_site_between_runs == 'true' && '1' || '' }}
                   DEBUG_REDUX: ${{ github.event.inputs.debug_redux == 'true' && '1' || '' }}
                   DEBUG_NAV: ${{ github.event.inputs.debug_nav == 'true' && '1' || '' }}
                   DEBUG_REST: ${{ github.event.inputs.debug_rest == 'true' && '1' || '' }}

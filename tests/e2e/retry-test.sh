@@ -5,12 +5,14 @@ set -e
 set -o pipefail
 
 # Initialize variables from environment or use defaults
-MAX_RETRIES="${MAX_RETRIES}"
+MAX_RETRIES="${MAX_RETRIES:-20}"
 WORKSPACE_DIR="${GITHUB_WORKSPACE}"
 CURRENT_ATTEMPT=1
 
 echo "VAR: RETRY_FULL_TEST_NAME: ${RETRY_FULL_TEST_NAME}"
+echo "VAR: SPEC_FILE: ${SPEC_FILE}"
 echo "VAR: MAX_RETRIES: ${MAX_RETRIES}"
+echo "VAR: RESET_SITE_BETWEEN_RUNS: ${RESET_SITE_BETWEEN_RUNS}"
 echo "VAR: DEBUG_REDUX: ${DEBUG_REDUX}"
 echo "VAR: DEBUG_NAV: ${DEBUG_NAV}"
 echo "VAR: DEBUG_REST: ${DEBUG_REST}"
@@ -34,8 +36,8 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
 
     # Run tests and capture output with timestamps
     set +e  # Temporarily disable exit on error since we want to handle test failures
-    # CURRENT_ATTEMPT="${CURRENT_ATTEMPT}" npm run test:e2e 2>&1 | while IFS= read -r line; do \
-    npm run test:e2e 2>&1 | while IFS= read -r line; do \
+    # CURRENT_ATTEMPT="${CURRENT_ATTEMPT}" npm run test:e2e "${SPEC_FILE}" 2>&1 | while IFS= read -r line; do \
+    npm run test:e2e "${SPEC_FILE}" 2>&1 | while IFS= read -r line; do \
         echo "[$(date '+%Y-%m-%d %H:%M:%S.%N' | cut -b1-23)] $line"; \
     done > "${output_file}"
     declare -i TEST_EXIT_STATUS=${PIPESTATUS[0]}
@@ -62,17 +64,19 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
 
     debug_log "Incremented CURRENT_ATTEMPT to ${CURRENT_ATTEMPT}"
     
-    # Skip site reset on the last iteration
     if (( CURRENT_ATTEMPT <= MAX_RETRIES )); then
-        # Reset the site for the next attempt
-        echo "RESET: Resetting site..."
-        if ! npm run env:reset-site > reset-output.log 2>&1; then
-            echo "ERROR: Failed to reset site:"
-            cat reset-output.log
-            exit 1
-        fi
+        # Skip site reset on the last iteration
+        if [[ "${RESET_SITE_BETWEEN_RUNS}" == "1" ]]; then
+            # Reset the site for the next attempt
+            echo "RESET: Resetting site..."
+            if ! npm run env:reset-site > reset-output.log 2>&1; then
+              echo "ERROR: Failed to reset site:"
+              cat reset-output.log
+              exit 1
+            fi
 
-        debug_log "Site reset completed"
+          debug_log "Site reset completed"
+        fi
         
         # Brief pause between attempts
         sleep 1
