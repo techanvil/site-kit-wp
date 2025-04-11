@@ -39,6 +39,7 @@ import {
 	ignorePermissionScopeErrors,
 } from '../../../utils';
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
+import { shouldLog } from '../../../config/bootstrap';
 
 describe( 'Analytics write scope requests', () => {
 	// These variables are used to determine whether or not we need to intercept requests to the server. By default the first request
@@ -371,6 +372,10 @@ describe( 'Analytics write scope requests', () => {
 	} );
 
 	function debugLog( message ) {
+		if ( ! shouldLog() ) {
+			return;
+		}
+
 		// eslint-disable-next-line no-console
 		console.debug( `DEBUG: ${ message }` );
 	}

@@ -38,8 +38,12 @@ import {
 	useRequestInterception,
 } from '../../../utils';
 import liveContainerVersionFixture from '../../../../../assets/js/modules/tagmanager/datastore/__fixtures__/live-container-version.json';
+import { shouldLog } from '../../../config/bootstrap';
 
 function debugLog( message ) {
+	if ( ! shouldLog() ) {
+		return;
+	}
 	// eslint-disable-next-line no-console
 	console.debug( `DEBUG: ${ message }` );
 }
