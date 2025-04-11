@@ -142,7 +142,9 @@ export function shouldLog() {
 	const currentTest = expect.getState().currentTestName;
 
 	// Log if we're not targeting a specific test, or if we're in the target test
-	return ! targetTest || targetTest === currentTest;
+	// return ! targetTest || targetTest === currentTest;
+	// Modded to allow specifying a test prefix to match:
+	return ! targetTest || currentTest?.startsWith( targetTest );
 }
 
 /**
