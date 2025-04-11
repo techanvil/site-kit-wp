@@ -40,12 +40,18 @@ import {
 import liveContainerVersionFixture from '../../../../../assets/js/modules/tagmanager/datastore/__fixtures__/live-container-version.json';
 import { shouldLog } from '../../../config/bootstrap';
 
-function debugLog( message ) {
-	if ( ! shouldLog() ) {
+function debugLog( message, { alwaysLogWithName = false } = {} ) {
+	if ( ! alwaysLogWithName && ! shouldLog() ) {
 		return;
 	}
+
+	// `currentTestName` is the full test name (including describe names)
+	const currentTest = expect.getState().currentTestName;
+
 	// eslint-disable-next-line no-console
-	console.debug( `DEBUG: ${ message }` );
+	console.debug(
+		`DEBUG: ${ message } ${ alwaysLogWithName ? `[${ currentTest }]` : '' }`
+	);
 }
 
 async function proceedToTagManagerSetup() {
@@ -70,9 +76,13 @@ async function proceedToTagManagerSetup() {
 
 describe( 'Tag Manager module setup', () => {
 	beforeAll( async () => {
-		debugLog( 'beforeAll, setRequestInterception' );
+		debugLog( 'beforeAll, setRequestInterception', {
+			alwaysLogWithName: true,
+		} );
 		await page.setRequestInterception( true );
-		debugLog( 'beforeAll, useRequestInterception' );
+		debugLog( 'beforeAll, useRequestInterception', {
+			alwaysLogWithName: true,
+		} );
 		useRequestInterception( ( request ) => {
 			const url = request.url();
 			if (
@@ -110,21 +120,33 @@ describe( 'Tag Manager module setup', () => {
 				request.continue();
 			}
 		} );
-		debugLog( 'beforeAll, useRequestInterception done' );
+		debugLog( 'beforeAll, useRequestInterception done', {
+			alwaysLogWithName: true,
+		} );
 	} );
 
 	beforeEach( async () => {
-		debugLog( 'beforeEach, setupSiteKit' );
+		debugLog( 'beforeEach, setupSiteKit', {
+			alwaysLogWithName: true,
+		} );
 		await setupSiteKit();
-		debugLog( 'beforeEach, setupSiteKit done' );
+		debugLog( 'beforeEach, setupSiteKit done', {
+			alwaysLogWithName: true,
+		} );
 	} );
 
 	afterEach( async () => {
-		debugLog( 'afterEach, deactivateUtilityPlugins' );
+		debugLog( 'afterEach, deactivateUtilityPlugins', {
+			alwaysLogWithName: true,
+		} );
 		await deactivateUtilityPlugins();
-		debugLog( 'afterEach, resetSiteKit' );
+		debugLog( 'afterEach, resetSiteKit', {
+			alwaysLogWithName: true,
+		} );
 		await resetSiteKit();
-		debugLog( 'afterEach, resetSiteKit done' );
+		debugLog( 'afterEach, resetSiteKit done', {
+			alwaysLogWithName: true,
+		} );
 	} );
 
 	describe( 'Setup without AMP active', () => {
@@ -379,34 +401,53 @@ describe( 'Tag Manager module setup', () => {
 
 	describe( 'Setup with AMP active', () => {
 		beforeAll( async () => {
-			debugLog( 'beforeAll, activatePlugin( amp )' );
+			debugLog( 'beforeAll, activatePlugin( amp )', {
+				alwaysLogWithName: true,
+			} );
 			await activatePlugin( 'amp' );
-			debugLog( 'beforeAll, activatePlugin( amp ) done' );
+			debugLog( 'beforeAll, activatePlugin( amp ) done', {
+				alwaysLogWithName: true,
+			} );
 		} );
 
 		beforeEach( async () => {
 			debugLog(
-				'beforeEach, activatePlugin( e2e-tests-module-setup-tagmanager-api-mock )'
+				'beforeEach, activatePlugin( e2e-tests-module-setup-tagmanager-api-mock )',
+				{
+					alwaysLogWithName: true,
+				}
 			);
 			await activatePlugin(
 				'e2e-tests-module-setup-tagmanager-api-mock'
 			);
-			debugLog( 'beforeEach, proceedToTagManagerSetup' );
+			debugLog( 'beforeEach, proceedToTagManagerSetup', {
+				alwaysLogWithName: true,
+			} );
 			await proceedToTagManagerSetup();
-			debugLog( 'beforeEach, proceedToTagManagerSetup done' );
+			debugLog( 'beforeEach, proceedToTagManagerSetup done', {
+				alwaysLogWithName: true,
+			} );
 		} );
 
 		afterAll( async () => {
-			debugLog( 'afterAll, deactivatePlugin( amp )' );
+			debugLog( 'afterAll, deactivatePlugin( amp )', {
+				alwaysLogWithName: true,
+			} );
 			await deactivatePlugin( 'amp' );
-			debugLog( 'afterAll, deactivatePlugin( amp ) done' );
+			debugLog( 'afterAll, deactivatePlugin( amp ) done', {
+				alwaysLogWithName: true,
+			} );
 		} );
 
 		describe( 'with Secondary AMP', () => {
 			beforeAll( async () => {
-				debugLog( 'beforeAll, setAMPMode( secondary )' );
+				debugLog( 'beforeAll, setAMPMode( secondary )', {
+					alwaysLogWithName: true,
+				} );
 				await setAMPMode( 'secondary' );
-				debugLog( 'beforeAll, setAMPMode( secondary ) done' );
+				debugLog( 'beforeAll, setAMPMode( secondary ) done', {
+					alwaysLogWithName: true,
+				} );
 			} );
 
 			it( 'renders both the AMP and web container select menus', async () => {
@@ -428,41 +469,57 @@ describe( 'Tag Manager module setup', () => {
 
 			describe( 'when validating', () => {
 				beforeEach( async () => {
-					debugLog( 'beforeEach, wait for account select' );
+					debugLog( 'beforeEach, wait for account select', {
+						alwaysLogWithName: true,
+					} );
 					await page.waitForSelector(
 						'.googlesitekit-tagmanager__select-account'
 					);
-					debugLog( 'beforeEach, click account select' );
+					debugLog( 'beforeEach, click account select', {
+						alwaysLogWithName: true,
+					} );
 					await expect( page ).toClick(
 						'.googlesitekit-tagmanager__select-account'
 					);
-					debugLog( 'beforeEach, wait for menu surface' );
+					debugLog( 'beforeEach, wait for menu surface', {
+						alwaysLogWithName: true,
+					} );
 					await page.waitForSelector(
 						'.mdc-menu-surface--open .mdc-list-item'
 					);
-					debugLog( 'beforeEach, click test account a' );
+					debugLog( 'beforeEach, click test account a', {
+						alwaysLogWithName: true,
+					} );
 					await expect( page ).toClick(
 						'.mdc-menu-surface--open .mdc-list-item',
 						{
 							text: /test account a/i,
 						}
 					);
-					debugLog( 'beforeEach, click complete setup' );
+					debugLog( 'beforeEach, click complete setup', {
+						alwaysLogWithName: true,
+					} );
 					await expect( page ).toClick( 'button:not(:disabled)', {
 						text: new RegExp( 'complete setup', 'i' ),
 					} );
-					debugLog( 'beforeEach, wait for notification' );
+					debugLog( 'beforeEach, wait for notification', {
+						alwaysLogWithName: true,
+					} );
 					await page.waitForSelector(
 						'.googlesitekit-subtle-notification'
 					);
-					debugLog( 'beforeEach, wait for congrats message' );
+					debugLog( 'beforeEach, wait for congrats message', {
+						alwaysLogWithName: true,
+					} );
 					await expect( page ).toMatchElement(
 						'.googlesitekit-subtle-notification__content p',
 						{
 							text: /Congrats on completing the setup for Tag Manager!/i,
 						}
 					);
-					debugLog( 'beforeEach, go to homepage' );
+					debugLog( 'beforeEach, go to homepage', {
+						alwaysLogWithName: true,
+					} );
 					await Promise.all( [
 						page.goto( createURL( '/', 'amp' ) ),
 						page.waitForNavigation( {
@@ -470,7 +527,9 @@ describe( 'Tag Manager module setup', () => {
 							timeout: 0,
 						} ),
 					] );
-					debugLog( 'beforeEach, go to homepage done' );
+					debugLog( 'beforeEach, go to homepage done', {
+						alwaysLogWithName: true,
+					} );
 				} );
 
 				it( 'validates homepage AMP for logged-in users', async () => {
