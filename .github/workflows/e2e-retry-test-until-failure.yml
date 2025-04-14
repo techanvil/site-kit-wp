@@ -53,11 +53,11 @@ on:
                 required: false
                 type: boolean
                 default: true
-            debug_test_runner_logging:
-                description: 'Enable test runner debug logging'
-                required: false
-                type: boolean
-                default: false
+            # debug_test_runner_logging:
+            #     description: 'Enable test runner debug logging'
+            #     required: false
+            #     type: boolean
+            #     default: false
 
 jobs:
     e2e-tests:
