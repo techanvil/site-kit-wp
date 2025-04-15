@@ -41,17 +41,28 @@ if ( ! fs.existsSync( resultsPath ) ) {
 
 try {
 	const results = JSON.parse( fs.readFileSync( resultsPath, 'utf8' ) );
-	const failed = results.testResults.some( ( file ) =>
-		file.assertionResults.some(
-			( test ) => test.fullName === testName && test.status === 'failed'
-		)
-	);
+	const failedTests = results.testResults.reduce( ( acc, file ) => {
+		const failed = file.assertionResults.find(
+			( test ) =>
+				test.fullName.startsWith( testName ) && test.status === 'failed'
+		);
+		if ( failed ) {
+			acc.push( failed );
+		}
+		return acc;
+	}, [] );
 
-	if ( failed ) {
-		process.stdout.write( `🎯 Target test "${ testName }" failed\n` );
+	if ( failedTests.length > 0 ) {
+		process.stdout.write(
+			`🎯 Target test(s) "${ failedTests
+				.map( ( test ) => test.fullName )
+				.join( ', ' ) }" failed\n`
+		);
 		process.exit( 0 );
 	} else {
-		process.stdout.write( `✅ Target test "${ testName }" passed\n` );
+		process.stdout.write(
+			`✅ Target test(s) matching "${ testName }" passed\n`
+		);
 		process.exit( 1 );
 	}
 } catch ( error ) {

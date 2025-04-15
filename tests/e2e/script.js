@@ -142,28 +142,30 @@ const runTests = async () => {
 
 				// Find the specific test result
 				const testResult = testResults.testResults.find( ( testFile ) =>
-					testFile.assertionResults.some(
-						( test ) => test.fullName === testToCheck
+					testFile.assertionResults.some( ( test ) =>
+						test.fullName.startsWith( testToCheck )
 					)
 				);
 
 				if ( testResult ) {
-					const specificTest = testResult.assertionResults.find(
-						( test ) => test.fullName === testToCheck
+					const failedTests = testResult.assertionResults.filter(
+						( test ) =>
+							test.fullName.startsWith( testToCheck ) &&
+							test.status === 'failed'
 					);
 
-					if ( specificTest ) {
-						// Exit with status 1 if the specific test failed
-						if ( specificTest.status === 'failed' ) {
-							process.stdout.write(
-								`\n🎯 Target test "${ testToCheck }" failed\n`
-							);
-							process.exit( 1 );
-						} else {
-							process.stdout.write(
-								`\n✅ Target test "${ testToCheck }" passed\n`
-							);
-						}
+					// Exit with status 1 if the specific test failed
+					if ( failedTests.length > 0 ) {
+						process.stdout.write(
+							`\n🎯 Target test(s) "${ failedTests
+								.map( ( test ) => test.fullName )
+								.join( ', ' ) }" failed\n`
+						);
+						process.exit( 1 );
+					} else {
+						process.stdout.write(
+							`\n✅ Target test(s) matching "${ testToCheck }" passed\n`
+						);
 					}
 				}
 			} catch ( error ) {
