@@ -68,7 +68,8 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         env:
             AMP_VERSION: ''
-            WP_VERSION: 'latest'
+            # WP_VERSION: 'latest' # Use 6.7 to avoid an error log message from the twentytwenty theme that occurs on the latest version 6.8.
+            WP_VERSION: '6.7'
             CA_CERT_REFRESH: ''
         steps:
             - uses: actions/checkout@v4
@@ -85,7 +86,7 @@ jobs:
                   echo "  debug_redux: ${{ github.event.inputs.debug_redux }}"
                   echo "  debug_nav: ${{ github.event.inputs.debug_nav }}"
                   echo "  debug_rest: ${{ github.event.inputs.debug_rest }}"
-                  echo "  debug_test_runner_logging: ${{ github.event.inputs.debug_test_runner_logging }}"
+              # echo "  debug_test_runner_logging: ${{ github.event.inputs.debug_test_runner_logging }}"
             - name: Setup Node.js (.nvmrc)
               uses: actions/setup-node@v4
               with:
@@ -224,7 +225,7 @@ jobs:
                   DEBUG_REDUX: ${{ github.event.inputs.debug_redux == 'true' && '1' || '' }}
                   DEBUG_NAV: ${{ github.event.inputs.debug_nav == 'true' && '1' || '' }}
                   DEBUG_REST: ${{ github.event.inputs.debug_rest == 'true' && '1' || '' }}
-                  DEBUG_TEST_RUNNER_LOGGING: ${{ github.event.inputs.debug_test_runner_logging == 'true' && '1' || '' }}
+                  # DEBUG_TEST_RUNNER_LOGGING: ${{ github.event.inputs.debug_test_runner_logging == 'true' && '1' || '' }}
               run: ./retry-test.sh
               working-directory: tests/e2e
 
