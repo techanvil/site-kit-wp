@@ -37,6 +37,9 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
 
     debug_log "Running tests and capturing output to ${output_file}"
 
+    # Ensure there are no REST response logs from previous runs
+    rm -f "${WORKSPACE_DIR}/uploads/site-kit-rest-responses.log"
+
     # Run tests and capture output with timestamps
     set +e  # Temporarily disable exit on error since we want to handle test failures
     CURRENT_ATTEMPT="${CURRENT_ATTEMPT}" npm run test:e2e "${SPEC_FILE}" 2>&1 | while IFS= read -r line; do \
@@ -46,6 +49,9 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
     declare -i TEST_EXIT_STATUS=${PIPESTATUS[0]}
     set -e  # Re-enable exit on error
 
+    # Move the REST response logs to the test results directory
+    mv "${WORKSPACE_DIR}/uploads/site-kit-rest-responses.log" "${WORKSPACE_DIR}/e2e-test-results/${TEST_RESULTS_ID}-site-kit-rest-responses.log"
+
     debug_log "Tests completed with exit status ${TEST_EXIT_STATUS}"
     
     if (( TEST_EXIT_STATUS != 0 )); then
@@ -54,6 +60,8 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
             echo "ERROR: Target test failed on attempt ${CURRENT_ATTEMPT}"
             echo "OUTPUT:"
             cat "${output_file}"
+            echo "REST RESPONSE LOGS:"
+            cat "${WORKSPACE_DIR}/e2e-test-results/${TEST_RESULTS_ID}-site-kit-rest-responses.log"
             exit 1
         fi
         echo "TEST: Other tests failed, continuing..."
