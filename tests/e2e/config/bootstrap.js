@@ -325,6 +325,11 @@ function isPluginConsoleMessage( pluginSlug, message ) {
 		);
 }
 
+function consoleDebug( ...args ) {
+	// eslint-disable-next-line no-console
+	console.debug( ...args, `[${ expect.getState().currentTestName }]` );
+}
+
 /**
  * Observes the given navigation request.
  *
@@ -342,8 +347,7 @@ function observeNavigationRequest( req ) {
 		if ( 'POST' === req.method() ) {
 			data.push( req.postData() );
 		}
-		// eslint-disable-next-line no-console
-		console.debug( 'NAV', ...data );
+		consoleDebug( 'NAV', ...data );
 	}
 }
 
@@ -365,8 +369,7 @@ function observeNavigationResponse( res ) {
 		if ( redirect ) {
 			data.push( { redirect } );
 		}
-		// eslint-disable-next-line no-console
-		console.debug( ...data );
+		consoleDebug( 'NAV', ...data );
 	}
 }
 
@@ -387,8 +390,7 @@ function observeRestRequest( req ) {
 		if ( 'POST' === req.method() ) {
 			data.push( req.postData() );
 		}
-		// eslint-disable-next-line no-console
-		console.debug( '>>>', ...data );
+		consoleDebug( '>>>', ...data );
 	}
 }
 
@@ -410,8 +412,10 @@ async function observeRestResponse( res ) {
 		// The response may fail to resolve if the test ends before it completes.
 		try {
 			data.push( await res.text() );
-			console.debug( ...data ); // eslint-disable-line no-console
-		} catch ( err ) {} // eslint-disable-line no-empty
+			consoleDebug( ...data );
+		} catch ( err ) {
+			consoleDebug( 'CAUGHT REST RESPONSE ERROR', err, ...data );
+		}
 	}
 }
 
