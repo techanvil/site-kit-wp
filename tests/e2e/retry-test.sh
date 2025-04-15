@@ -50,7 +50,7 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
     set -e  # Re-enable exit on error
 
     # Move the REST response logs to the test results directory
-    mv "${WORKSPACE_DIR}/uploads/site-kit-rest-responses.log" "${WORKSPACE_DIR}/e2e-test-results/${TEST_RESULTS_ID}-site-kit-rest-responses.log"
+    mv -f "${WORKSPACE_DIR}/uploads/site-kit-rest-responses.log" "${WORKSPACE_DIR}/e2e-test-results/${TEST_RESULTS_ID}-site-kit-rest-responses.log"
 
     debug_log "Tests completed with exit status ${TEST_EXIT_STATUS}"
     
