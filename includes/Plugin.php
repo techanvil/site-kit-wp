@@ -12,6 +12,7 @@ namespace Google\Site_Kit;
 
 use Google\Site_Kit\Core\Remote_Features\Remote_Features_Provider;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\REST_Response_Logger;
 
 /**
  * Main class for the plugin.
@@ -88,6 +89,9 @@ final class Plugin {
 		}
 
 		$options = new Core\Storage\Options( $this->context );
+
+		// Initialize REST response logger.
+		( new REST_Response_Logger() )->register();
 
 		// Set up remote features before anything else.
 		( new Remote_Features_Provider( $this->context, $options ) )->register();

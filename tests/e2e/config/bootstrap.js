@@ -130,15 +130,42 @@ function removePageEvents() {
 }
 
 /**
+ * Determines if logging should occur based on the current test context.
+ *
+ * @since 1.0.0
+ *
+ * @return {boolean} Whether logging should occur.
+ */
+export function shouldLog() {
+	const targetTest = process.env.RETRY_FULL_TEST_NAME;
+	const debugLogTestPrefix = process.env.DEBUG_LOG_TEST_PREFIX;
+	// `currentTestName` is the full test name (including describe names)
+	const currentTest = expect.getState().currentTestName;
+
+	// Log if we're not targeting a specific test, or if we're in the target test
+	// return ! targetTest || targetTest === currentTest;
+	// Modded to allow specifying a test prefix to match:
+	return (
+		! targetTest ||
+		currentTest?.startsWith( debugLogTestPrefix || targetTest )
+	);
+}
+
+/**
  * Adds a page event handler to emit uncaught exception to process if one of
  * the observed console logging types is encountered.
  *
  * @since 1.0.0
  */
 function observeConsoleLogging() {
+	// eslint-disable-next-line complexity
 	page.on( 'console', ( message ) => {
 		const type = message.type();
 		if ( ! OBSERVED_CONSOLE_MESSAGE_TYPES.hasOwnProperty( type ) ) {
+			return;
+		}
+
+		if ( ! shouldLog() ) {
 			return;
 		}
 
@@ -298,6 +325,11 @@ function isPluginConsoleMessage( pluginSlug, message ) {
 		);
 }
 
+function consoleDebug( ...args ) {
+	// eslint-disable-next-line no-console
+	console.debug( ...args, `[${ expect.getState().currentTestName }]` );
+}
+
 /**
  * Observes the given navigation request.
  *
@@ -306,13 +338,16 @@ function isPluginConsoleMessage( pluginSlug, message ) {
  * @param {Object} req HTTP request object.
  */
 function observeNavigationRequest( req ) {
+	if ( ! shouldLog() ) {
+		return;
+	}
+
 	if ( req.isNavigationRequest() ) {
 		const data = [ req.method(), req.url() ];
 		if ( 'POST' === req.method() ) {
 			data.push( req.postData() );
 		}
-		// eslint-disable-next-line no-console
-		console.debug( 'NAV', ...data );
+		consoleDebug( 'NAV', ...data );
 	}
 }
 
@@ -324,14 +359,17 @@ function observeNavigationRequest( req ) {
  * @param {Object} res HTTP response object.
  */
 function observeNavigationResponse( res ) {
+	if ( ! shouldLog() ) {
+		return;
+	}
+
 	if ( res.request().isNavigationRequest() ) {
 		const data = [ res.status(), res.request().method(), res.url() ];
 		const redirect = res.headers().location;
 		if ( redirect ) {
 			data.push( { redirect } );
 		}
-		// eslint-disable-next-line no-console
-		console.debug( ...data );
+		consoleDebug( 'NAV', ...data );
 	}
 }
 
@@ -343,13 +381,16 @@ function observeNavigationResponse( res ) {
  * @param {Object} req HTTP request object from the REST API request.
  */
 function observeRestRequest( req ) {
+	if ( ! shouldLog() ) {
+		return;
+	}
+
 	if ( req.url().match( 'wp-json' ) ) {
 		const data = [ req.method(), req.url() ];
 		if ( 'POST' === req.method() ) {
 			data.push( req.postData() );
 		}
-		// eslint-disable-next-line no-console
-		console.debug( '>>>', ...data );
+		consoleDebug( '>>>', ...data );
 	}
 }
 
@@ -361,14 +402,20 @@ function observeRestRequest( req ) {
  * @param {Object} res HTTP response object from the REST API request.
  */
 async function observeRestResponse( res ) {
+	if ( ! shouldLog() ) {
+		return;
+	}
+
 	if ( res.url().match( 'wp-json' ) ) {
 		const data = [ res.status(), res.request().method(), res.url() ];
 
 		// The response may fail to resolve if the test ends before it completes.
 		try {
 			data.push( await res.text() );
-			console.debug( ...data ); // eslint-disable-line no-console
-		} catch ( err ) {} // eslint-disable-line no-empty
+			consoleDebug( ...data );
+		} catch ( err ) {
+			consoleDebug( 'CAUGHT REST RESPONSE ERROR', err, ...data );
+		}
 	}
 }
 
