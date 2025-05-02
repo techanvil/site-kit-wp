@@ -39,7 +39,7 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
 
     # Run tests and capture output with timestamps
     set +e  # Temporarily disable exit on error since we want to handle test failures
-    CURRENT_ATTEMPT="${CURRENT_ATTEMPT}" npm run test:e2e "${SPEC_FILE}" 2>&1 | while IFS= read -r line; do \
+    CURRENT_ATTEMPT="${CURRENT_ATTEMPT}" npm run test "${SPEC_FILE}" 2>&1 | while IFS= read -r line; do \
     # npm run test:e2e "${SPEC_FILE}" 2>&1 | while IFS= read -r line; do \
         echo "[$(date '+%Y-%m-%d %H:%M:%S.%N' | cut -b1-23)] $line"; \
     done > "${output_file}"
@@ -72,7 +72,7 @@ while (( CURRENT_ATTEMPT <= MAX_RETRIES )); do
         if [[ "${RESET_SITE_BETWEEN_RUNS}" == "1" ]]; then
             # Reset the site for the next attempt
             echo "RESET: Resetting site..."
-            if ! npm run env:reset-site > reset-output.log 2>&1; then
+            if ! npm run reset-site > reset-output.log 2>&1; then
               echo "ERROR: Failed to reset site:"
               cat reset-output.log
               exit 1
