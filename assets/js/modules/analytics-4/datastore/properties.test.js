@@ -24,7 +24,7 @@ import { cloneDeep } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -83,7 +83,7 @@ describe( 'modules/analytics-4 properties', () => {
 	);
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -95,7 +95,7 @@ describe( 'modules/analytics-4 properties', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -663,9 +663,9 @@ describe( 'modules/analytics-4 properties', () => {
 					body: fixtures.googleTagSettings,
 				} );
 
-				expect( store.getState().googleTagSettings ).toMatchObject(
-					fixtures.googleTagSettings
-				);
+				expect(
+					store.getState().googleTagSettings[ measurementID ]
+				).toMatchObject( fixtures.googleTagSettings );
 			} );
 
 			it( 'requires the GTM readonly scope to dispatch a request for Google Tag settings', async () => {

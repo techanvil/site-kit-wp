@@ -443,7 +443,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	'gathering-data-notification': {
 		Component: GatheringDataNotification,
 		priority: PRIORITY.INFO,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -521,7 +521,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	'zero-data-notification': {
 		Component: ZeroDataNotification,
 		priority: PRIORITY.INFO,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -616,7 +616,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	'module-recovery-alert': {
 		Component: ModuleRecoveryAlert,
 		priority: PRIORITY.ERROR_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: false,
 		checkRequirements: async ( { resolveSelect } ) => {
@@ -640,18 +640,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			// TODO: refactor this component to use dismissed items rather than prompts once the concepts are combined.
-			await resolveSelect( CORE_USER ).getDismissedPrompts();
-			const isPromptDismissed = select( CORE_USER ).isPromptDismissed(
-				CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
-			);
-			const isDismissingPrompt = select( CORE_USER ).isDismissingPrompt(
-				CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
-			);
-			if ( isPromptDismissed || isDismissingPrompt ) {
-				return false;
-			}
-
 			// The isConsentModeEnabled selector relies on the resolution
 			// of the getConsentModeSettings() resolver.
 			await resolveSelect( CORE_SITE ).getConsentModeSettings();

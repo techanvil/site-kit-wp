@@ -343,17 +343,17 @@ describe( 'Analytics write scope requests', () => {
 
 		interceptCreatePropertyRequest = true;
 
-		await expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
-			text: /proceed/i,
-		} );
-
-		// expect( console ).toHaveErrored(); // Permission scope error.
-		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics-4/data/create-property' )
-		);
-		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics-4/data/create-webdatastream' )
-		);
+		await Promise.all( [
+			expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
+				text: /proceed/i,
+			} ),
+			page.waitForRequest( ( req ) =>
+				req.url().match( 'analytics-4/data/create-property' )
+			),
+			page.waitForRequest( ( req ) =>
+				req.url().match( 'analytics-4/data/create-webdatastream' )
+			),
+		] );
 
 		// They should end up on the dashboard.
 		await page.waitForNavigation();
@@ -425,15 +425,17 @@ describe( 'Analytics write scope requests', () => {
 			text: /set up a new web data stream/i,
 		} );
 
-		await expect( page ).toClick( '.mdc-button--raised', {
-			text: /complete setup/i,
-		} );
-
 		debugLog( 'Waiting for create-webdatastream request' );
 
-		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics-4/data/create-webdatastream' )
-		);
+		await Promise.all( [
+			expect( page ).toClick( '.mdc-button--raised', {
+				text: /complete setup/i,
+			} ),
+
+			page.waitForRequest( ( req ) =>
+				req.url().match( 'analytics-4/data/create-webdatastream' )
+			),
+		] );
 
 		debugLog( 'create-webdatastream request received' );
 

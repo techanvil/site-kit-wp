@@ -1,13 +1,13 @@
 {
 	"scripts": {
-		"pretest:e2e": "./bin/local-env/env-check.sh && ./bin/test-docker-connectivity",
-		"test:e2e": "cross-env NODE_OPTIONS=--experimental-abortcontroller WP_BASE_URL=http://localhost:9002 ./script.js",
-		"test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
-		"test:e2e:watch": "npm run test:e2e -- --watch",
-		"test:e2e:watch:interactive": "npm run test:e2e -- --watch --puppeteer-interactive",
-		"env:start": "./bin/local-env/start.sh",
-		"env:stop": "./bin/local-env/stop.sh",
-		"env:reset-site": "./bin/local-env/install-wordpress.sh --reset-site"
+		"pretest": "./bin/local-env/env-check.sh && ./bin/test-docker-connectivity",
+		"test": "cross-env NODE_OPTIONS=--experimental-abortcontroller WP_BASE_URL=http://localhost:9002 ./script.js",
+		"test:interactive": "npm run test -- --puppeteer-interactive",
+		"test:watch": "npm run test -- --watch",
+		"test:watch:interactive": "npm run test -- --watch --puppeteer-interactive",
+		"start": "./bin/local-env/start.sh",
+		"stop": "./bin/local-env/stop.sh",
+		"reset-site": "./bin/local-env/install-wordpress.sh --reset-site"
 	},
 	"config": {
 		"puppeteer": {
