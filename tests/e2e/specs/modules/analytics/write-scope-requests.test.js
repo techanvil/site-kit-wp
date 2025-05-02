@@ -39,6 +39,7 @@ import {
 	ignorePermissionScopeErrors,
 } from '../../../utils';
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
+import { shouldLog } from '../../../config/bootstrap';
 
 describe( 'Analytics write scope requests', () => {
 	// These variables are used to determine whether or not we need to intercept requests to the server. By default the first request
@@ -370,6 +371,15 @@ describe( 'Analytics write scope requests', () => {
 		);
 	} );
 
+	function debugLog( message ) {
+		if ( ! shouldLog() ) {
+			return;
+		}
+
+		// eslint-disable-next-line no-console
+		console.debug( `DEBUG: ${ message }` );
+	}
+
 	it( 'prompts for additional permissions during a new Analytics web data stream creation if the user has not granted the Analytics edit scope', async () => {
 		interceptCreatePropertyRequest = true;
 		interceptCreateWebDataStreamRequest = false;
@@ -415,6 +425,8 @@ describe( 'Analytics write scope requests', () => {
 			text: /set up a new web data stream/i,
 		} );
 
+		debugLog( 'Waiting for create-webdatastream request' );
+
 		await Promise.all( [
 			expect( page ).toClick( '.mdc-button--raised', {
 				text: /complete setup/i,
@@ -425,10 +437,14 @@ describe( 'Analytics write scope requests', () => {
 			),
 		] );
 
+		debugLog( 'create-webdatastream request received' );
+
 		// Click on confirm changes button and wait for permissions modal dialog.
 		await page.waitForSelector( '.mdc-dialog--open .mdc-button', {
 			timeout: 3000,
 		} );
+
+		debugLog( 'Waiting for proceed button' );
 
 		interceptCreateWebDataStreamRequest = true;
 		// Click on proceed button and wait for oauth request.
@@ -436,18 +452,30 @@ describe( 'Analytics write scope requests', () => {
 			text: /proceed/i,
 		} );
 
+		debugLog( 'Proceed button clicked' );
+
 		await page.waitForRequest( ( req ) =>
 			req.url().includes( 'sitekit.withgoogle.com/o/oauth2/auth' )
 		);
 
+		debugLog( 'oauth request received' );
+
 		// They should end up on the dashboard.
 		await page.waitForNavigation();
+
+		debugLog( 'Waiting for notification' );
+
 		await page.waitForTimeout( 5000 );
+
+		debugLog( 'Notification received' );
+
 		await expect( page ).toMatchElement(
 			'.googlesitekit-subtle-notification__content p',
 			{
 				text: /Congrats on completing the setup for Analytics!/i,
 			}
 		);
+
+		debugLog( 'Notification matched' );
 	} );
 } );
