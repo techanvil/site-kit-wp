@@ -25,6 +25,7 @@ process.on( 'unhandledRejection', ( err ) => {
 /* eslint-disable-next-line jest/no-jest-import */
 const jest = require( 'jest' );
 const { sync: spawn } = require( 'cross-spawn' );
+const path = require( 'path' );
 
 // getArgsFromCLI inlined from @wordpress/scripts utils/process.js v12.0.0.
 // https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/utils/process.js#L1-L11
@@ -92,4 +93,91 @@ Object.entries( configsMapping ).forEach( ( [ envKey, argName ] ) => {
 
 const cleanUpPrefixes = [ '--puppeteer-', '--wordpress-' ];
 
-jest.run( [ ...config, ...runInBand, ...getArgsFromCLI( cleanUpPrefixes ) ] );
+// Get the test name to check from environment variable
+const testToCheck = process.env.RETRY_FULL_TEST_NAME;
+
+// Create a dedicated directory for test results at repo root
+const repoRoot = path.resolve( __dirname, '../../' );
+const resultsDir = path.join( repoRoot, 'e2e-test-results' );
+const resultsID = process.env.TEST_RESULTS_ID || 'results';
+const resultsPath = path.join( resultsDir, `${ resultsID }.json` );
+
+// Add JSON reporter if we're checking a specific test
+const additionalConfig = testToCheck
+	? [ '--json', `--outputFile=${ resultsPath }` ]
+	: [];
+
+// Run the tests
+const args = [
+	...config,
+	...runInBand,
+	...getArgsFromCLI( cleanUpPrefixes ),
+	...additionalConfig,
+];
+
+// Run tests and wait for completion
+const runTests = async () => {
+	try {
+		// Ensure the results directory exists
+		const fs = require( 'fs' );
+		if ( ! fs.existsSync( resultsDir ) ) {
+			fs.mkdirSync( resultsDir, { recursive: true } );
+		}
+
+		await jest.run( args );
+
+		// If we're checking a specific test, analyze the results
+		if ( testToCheck ) {
+			try {
+				if ( ! fs.existsSync( resultsPath ) ) {
+					process.stdout.write(
+						`Error: Test results file not found at ${ resultsPath }\n`
+					);
+					process.exit( 1 );
+				}
+
+				const testResults = JSON.parse(
+					fs.readFileSync( resultsPath, 'utf8' )
+				);
+
+				// Find the specific test result
+				const testResult = testResults.testResults.find( ( testFile ) =>
+					testFile.assertionResults.some( ( test ) =>
+						test.fullName.startsWith( testToCheck )
+					)
+				);
+
+				if ( testResult ) {
+					const failedTests = testResult.assertionResults.filter(
+						( test ) =>
+							test.fullName.startsWith( testToCheck ) &&
+							test.status === 'failed'
+					);
+
+					// Exit with status 1 if the specific test failed
+					if ( failedTests.length > 0 ) {
+						process.stdout.write(
+							`\n🎯 Target test(s) "${ failedTests
+								.map( ( test ) => test.fullName )
+								.join( ', ' ) }" failed\n`
+						);
+						process.exit( 1 );
+					} else {
+						process.stdout.write(
+							`\n✅ Target test(s) matching "${ testToCheck }" passed\n`
+						);
+					}
+				}
+			} catch ( error ) {
+				process.stdout.write(
+					`Error analyzing test results: ${ error }\n`
+				);
+			}
+		}
+	} catch ( error ) {
+		process.stdout.write( `Error running tests: ${ error }\n` );
+		process.exit( 1 );
+	}
+};
+
+runTests();

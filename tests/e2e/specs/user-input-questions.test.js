@@ -42,39 +42,93 @@ import {
 } from '../../../assets/js/modules/analytics-4/utils/data-mock';
 import { getSearchConsoleMockResponse } from '../../../assets/js/modules/search-console/util/data-mock';
 import getMultiDimensionalObjectFromParams from '../utils/get-multi-dimensional-object-from-params';
+import { shouldLog } from '../config/bootstrap';
 
 describe( 'User Input Settings', () => {
+	function debugLog( message ) {
+		if ( ! shouldLog() ) {
+			return;
+		}
+
+		// eslint-disable-next-line no-console
+		console.debug( `DEBUG: ${ message }` );
+	}
+
 	async function fillInInputSettings() {
+		debugLog( 'waiting for input settings question to load' );
 		await page.waitForSelector( '.googlesitekit-user-input__question' );
 
+		debugLog( 'selecting purpose' );
 		await step( 'select purpose', async () => {
 			await expect( page ).toClick( '#purpose-publish_blog' );
 		} );
 
+		debugLog( 'waiting for next button to load 1' );
+		await page.waitForSelector(
+			'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--next',
+			{
+				timeout: 10_000,
+			}
+		);
+
+		debugLog( 'clicking next button' );
 		await expect( page ).toClick(
 			'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--next'
 		);
 
+		debugLog( 'waiting for post frequency question to load' );
 		await pageWait();
 
+		debugLog( 'selecting post frequency' );
 		await step( 'select post frequency', async () => {
 			await expect( page ).toClick( '#postFrequency-monthly' );
 		} );
 
+		debugLog( 'waiting for next button to load 2' );
+		await page.waitForSelector(
+			'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--next',
+			{
+				timeout: 10_000,
+			}
+		);
+
+		debugLog( 'clicking next button' );
 		await expect( page ).toClick(
 			'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--next'
 		);
 
+		debugLog( 'waiting for goals question to load' );
 		await pageWait();
 
+		debugLog( 'selecting goals' );
 		await step( 'select goals', async () => {
+			debugLog( 'selecting retaining visitors goal' );
 			await expect( page ).toClick( '#goals-retaining_visitors' );
+
+			debugLog( 'selecting improving performance goal' );
 			await expect( page ).toClick( '#goals-improving_performance' );
+
+			debugLog( 'selecting help better rank goal' );
 			await expect( page ).toClick( '#goals-help_better_rank' );
 		} );
 
+		// debugLog( 'waiting for next button to load 3' );
+		// await page.waitForSelector(
+		// 	'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--next',
+		// 	{
+		// 		timeout: 10_000,
+		// 	}
+		// );
+
+		// debugLog( 'clicking next button' );
+		// await expect( page ).toClick(
+		// 	'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--next'
+		// );
+
+		debugLog( 'waiting for settings submission' );
 		await pageWait();
 
+		debugLog( 'clicking complete button' );
 		await step(
 			'wait for settings submission',
 			Promise.all( [
@@ -86,17 +140,22 @@ describe( 'User Input Settings', () => {
 			] )
 		);
 
+		debugLog( 'waiting for key metric tile to appear' );
 		await pageWait( 600 );
 
+		debugLog( 'waiting for key metric tile to appear' );
 		await step(
 			'wait for a Key Metric tile to successfully appear',
 			page.waitForSelector(
 				'.googlesitekit-widget--kmAnalyticsTopReturningVisitorPages'
 			)
 		);
+
+		debugLog( 'waited for key metric tile to appear' );
 	}
 
 	beforeAll( async () => {
+		debugLog( 'setting up request interception' );
 		await page.setRequestInterception( true );
 
 		useRequestInterception( ( request ) => {
@@ -183,31 +242,53 @@ describe( 'User Input Settings', () => {
 	} );
 
 	beforeEach( async () => {
+		debugLog( 'activating plugins' );
 		await activatePlugins(
 			'e2e-tests-proxy-setup',
 			'e2e-tests-oauth-callback-plugin'
 		);
+
+		debugLog( 'setting up search console' );
 		await setSearchConsoleProperty();
+
+		debugLog( 'enabling request interception' );
 		await page.setRequestInterception( true );
 	} );
 
 	afterEach( async () => {
+		debugLog( 'deactivating utility plugins' );
 		await deactivateUtilityPlugins();
+
+		debugLog( 'resetting site kit' );
 		await resetSiteKit();
+
+		debugLog( 'reset site kit complete' );
 	} );
 
 	it( 'should offer to enter input settings for existing users', async () => {
+		debugLog( 'setting up site kit' );
+
 		await setupSiteKit();
+
+		debugLog( 'disabling request interception' );
 		await page.setRequestInterception( false );
+
+		debugLog( 'setting up analytics 4' );
 		await setupAnalytics4();
+
+		debugLog( 'enabling request interception' );
 		await page.setRequestInterception( true );
+
+		debugLog( 'setting up search console' );
 		await setSearchConsoleProperty();
 
+		debugLog( 'visiting admin dashboard' );
 		await step(
 			'visit admin dashboard',
 			visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' )
 		);
 
+		debugLog( 'waiting for data available requests to complete' );
 		await Promise.all( [
 			page.waitForResponse( ( res ) =>
 				res
@@ -225,25 +306,33 @@ describe( 'User Input Settings', () => {
 			),
 		] );
 
+		debugLog( 'reloading page' );
 		// On the first load of the dashboard, report requests made by the isGatheringData selector for SC and GA4
 		// will fetch some data since we intercept those requests providing mock report data. This the data-available
 		// endpoint which sets the appropriate transients that will be prefetched only on the next page load.
 		await page.reload();
 
+		debugLog( 'clicking on key metrics navigation tab' );
 		await step(
 			'click on key metrics navigation tab and scroll to the key metrics widget',
 			async () => {
-				await page.waitForSelector( '.googlesitekit-navigation' );
+				await page.waitForSelector( '.googlesitekit-navigation', {
+					timeout: 10_000,
+				} );
 				await expect( page ).toClick( '.mdc-chip', {
 					text: /key metrics/i,
 				} );
 			}
 		);
 
+		debugLog( 'clicking on CTA button and waiting for navigation' );
 		await step( 'click on CTA button and wait for navigation', async () => {
+			debugLog( 'waiting for CTA button to appear' );
 			await page.waitForSelector(
 				'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
 			);
+
+			debugLog( 'clicking on CTA button' );
 			await Promise.all( [
 				expect( page ).toClick(
 					'.googlesitekit-widget-key-metrics-actions__wrapper .googlesitekit-key-metrics-cta-button'
@@ -252,29 +341,53 @@ describe( 'User Input Settings', () => {
 			] );
 		} );
 
+		debugLog( 'filling in input settings' );
 		await fillInInputSettings();
+
+		debugLog( 'filled in input settings' );
 	} );
 
 	it( 'should let existing users enter input settings from the settings page', async () => {
+		debugLog( 'setting up site kit' );
 		await setupSiteKit();
+
+		debugLog( 'disabling request interception' );
 		await page.setRequestInterception( false );
+
+		debugLog( 'setting up analytics 4' );
 		await setupAnalytics4();
+
+		debugLog( 'enabling request interception' );
 		await page.setRequestInterception( true );
+
+		debugLog( 'setting up search console' );
 		await setSearchConsoleProperty();
 
+		debugLog( 'visiting admin settings' );
 		await step( 'visit admin settings', async () => {
+			debugLog( 'visiting admin settings page' );
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
+
+			debugLog( 'waiting for admin settings page to load' );
 			await pageWait();
+
+			debugLog( 'waiting for tab bar to load' );
 			await page.waitForSelector( '.mdc-tab-bar a.mdc-tab' );
+
+			debugLog( 'clicking on admin settings tab' );
 			await expect( page ).toClick( 'a.mdc-tab', {
 				text: /admin settings/i,
 			} );
 		} );
 
+		debugLog( 'clicking on CTA button and waiting for navigation' );
 		await step( 'click on CTA button and wait for navigation', async () => {
+			debugLog( 'waiting for CTA button to appear' );
 			await page.waitForSelector(
 				'.googlesitekit-acr-subtle-notification'
 			);
+
+			debugLog( 'clicking on CTA button' );
 			await Promise.all( [
 				expect( page ).toClick(
 					'.googlesitekit-acr-subtle-notification .googlesitekit-button-icon--spinner'
@@ -283,8 +396,12 @@ describe( 'User Input Settings', () => {
 			] );
 		} );
 
+		debugLog( 'waiting for page to load' );
 		await pageWait();
 
+		debugLog( 'filling in input settings' );
 		await fillInInputSettings();
+
+		debugLog( 'filled in input settings' );
 	} );
 } );
